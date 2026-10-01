@@ -29,6 +29,11 @@ jobs:
 
       - name: Install Android SDK and fix sdkmanager path
         run: |
+          # Force Java 17
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
+          java -version
+
           # Download command-line tools
           mkdir -p $HOME/android-sdk/cmdline-tools
           cd $HOME/android-sdk/cmdline-tools
@@ -52,7 +57,9 @@ jobs:
           ln -sf $HOME/android-sdk/cmdline-tools/latest/bin/avdmanager \
             $HOME/android-sdk/tools/bin/avdmanager
 
-          # Set env vars
+          # Set env vars permanently
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
           echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
           echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
           echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
@@ -80,6 +87,8 @@ jobs:
 
       - name: Build APK
         run: |
+          export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
           export ANDROID_SDK_ROOT=$HOME/android-sdk
           export ANDROID_HOME=$HOME/android-sdk
           buildozer -v android debug 2>&1
