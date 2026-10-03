@@ -39,7 +39,7 @@ android.api = 33
 android.ndk = 25b
 
 # Android build tools version
-android.build_tools_version = 34.0.0
+android.build_tools_version = 37.0.0
 
 # Android architecture (covers most modern phones)
 android.archs = arm64-v8a, armeabi-v7a

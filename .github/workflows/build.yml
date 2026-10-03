@@ -38,65 +38,38 @@ jobs:
           pip install --upgrade pip wheel
           pip install buildozer==1.5.0 cython==0.29.33
 
-      - name: Install Android SDK cmdline-tools
-        run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
-          mkdir -p $HOME/android-sdk/cmdline-tools
-          cd $HOME/android-sdk/cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdtools.zip
-          unzip -q cmdtools.zip
-          mv cmdline-tools latest
-          rm cmdtools.zip
-
-          # Accept licenses
-          yes | $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-            --sdk_root=$HOME/android-sdk --licenses || true
-
-          # Install required SDK packages
-          $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-            --sdk_root=$HOME/android-sdk \
-            "platform-tools" \
-            "platforms;android-33" \
-            "build-tools;34.0.0" \
-            "ndk;25.2.9519653"
-
-          # Create legacy tools/bin path Buildozer expects
-          mkdir -p $HOME/android-sdk/tools/bin
-          ln -sf $HOME/android-sdk/cmdline-tools/latest/bin/sdkmanager \
-            $HOME/android-sdk/tools/bin/sdkmanager
-          ln -sf $HOME/android-sdk/cmdline-tools/latest/bin/avdmanager \
-            $HOME/android-sdk/tools/bin/avdmanager
-
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$HOME/android-sdk/platform-tools" >> $GITHUB_PATH
-
-      - name: Configure Buildozer to use existing SDK and NDK
-        run: |
-          mkdir -p ~/.buildozer/android/platform
-          # Point to pre-installed SDK
-          ln -sfn $HOME/android-sdk \
-            ~/.buildozer/android/platform/android-sdk
-          # Point to pre-installed NDK
-          ln -sfn $HOME/android-sdk/ndk/25.2.9519653 \
-            ~/.buildozer/android/platform/android-ndk-r25b
-
-      - name: Cache Buildozer directory
+      - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v2
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v5
           restore-keys: buildozer-
 
       - name: Build APK
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
         run: |
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
-          export ANDROID_SDK_ROOT=$HOME/android-sdk
-          export ANDROID_HOME=$HOME/android-sdk
-          java -version
+
+          # Ensure the python3 on PATH is the one set up by actions/setup-python (3.10),
+          # not any system python that could be 3.14+. This prevents python-for-android
+          # from creating a venv with a mismatched pip version (ImportError on
+          # BuildDependencyInstallError).
+          export PATH="$(python3 -c 'import sys, os; print(os.path.dirname(sys.executable))'):$PATH"
+          echo "Using python: $(which python3) -> $(python3 --version)"
+
+          # Remove any stale venv from a previous failed build that may be cached
+          rm -rf ~/.buildozer/android/platform/build-*/build/venv
+
           buildozer -v android debug 2>&1
+          BUILD_EXIT=$?
+          if [ $BUILD_EXIT -ne 0 ]; then
+            echo "=== BUILD FAILED ==="
+            echo "=== Last 150 lines of buildozer log ==="
+            find . -name "*.log" | xargs tail -150 2>/dev/null || true
+            exit $BUILD_EXIT
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
