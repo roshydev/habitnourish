@@ -43,7 +43,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v12
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v13
           restore-keys: buildozer-
 
       - name: Bootstrap Android SDK
@@ -67,6 +67,7 @@ jobs:
           "$SDKMANAGER" --sdk_root="$SDK_DIR" \
             "build-tools;37.0.0" \
             "platforms;android-33" \
+            "platforms;android-35" \
             "platform-tools"
 
           mkdir -p "$SDK_DIR/tools/bin"

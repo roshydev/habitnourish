@@ -36,8 +36,8 @@ android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
 # Minimum Android API (Android 8.0)
 android.minapi = 26
 
-# Target Android API
-android.api = 33
+# Target Android API — must be >= 34 for Android 15 devices to accept install
+android.api = 35
 
 # Pin python-for-android to v2024.01.21 which uses Python 3.11.5.
 # p4a master has dropped support for Python < 3.14 (issue #3281) and
