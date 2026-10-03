@@ -33,8 +33,19 @@ from screens.lifestyle  import LifestyleScreen
 # On Android, Kivy uses the full screen automatically.
 try:
     from android import mActivity  # noqa — only present on Android
-except ImportError:
-    Window.size = (390, 844)  # Desktop preview size only
+    # Detect status bar height and shift the Kivy window down so
+    # the header bar is not hidden behind the Android status bar.
+    from jnius import autoclass
+    _Res = autoclass('android.content.res.Resources')
+    _res = _Res.getSystem()
+    _rid = _res.getIdentifier('status_bar_height', 'dimen', 'android')
+    if _rid > 0:
+        _sb_px = _res.getDimensionPixelSize(_rid)
+        # Kivy Window.top moves the window down by this many pixels
+        Window.top = _sb_px
+except Exception:
+    # Desktop — apply a phone-like preview size
+    Window.size = (390, 844)
 
 Window.clearcolor = (0.945, 0.973, 0.914, 1)
 

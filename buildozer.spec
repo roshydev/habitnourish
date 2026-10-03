@@ -57,7 +57,8 @@ android.archs = arm64-v8a, armeabi-v7a
 # App icon (optional — add a 512x512 PNG named icon.png to use it)
 # icon.filename = %(source.dir)s/icon.png
 
-# Fullscreen
+# Fullscreen = 0 keeps the Android status bar visible.
+# Top padding is handled in main.py via Window insets.
 fullscreen = 0
 
 [buildozer]
