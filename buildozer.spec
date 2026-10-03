@@ -21,10 +21,11 @@ source.include_patterns = main.py,db.py,helpers.py,screens/*.py,*.csv
 version = 1.0
 
 # Python dependencies
-# certifi, charset-normalizer, idna, requests, urllib3 are pure-python
-# packages pulled in transitively by kivy; listing them here lets p4a
-# install them via pip rather than failing to find a recipe for them.
-requirements = python3,kivy==2.3.1,sqlite3,certifi,charset-normalizer,idna,requests,urllib3,six
+# requests is listed explicitly so p4a uses its own recipe which handles
+# charset-normalizer correctly for ARM. Do NOT add charset-normalizer
+# directly — versions >= 3.0.0 have a compiled C extension (md.so) that
+# cannot be pip-installed for Android and will cause an architecture mismatch.
+requirements = python3,kivy==2.3.1,sqlite3,certifi,idna,requests,urllib3,six
 
 # Android orientation
 orientation = portrait
@@ -37,6 +38,12 @@ android.minapi = 26
 
 # Target Android API
 android.api = 33
+
+# Pin python-for-android to v2024.01.21 which uses Python 3.11.5.
+# p4a master has dropped support for Python < 3.14 (issue #3281) and
+# hardcodes 3.14.2, which causes pip incompatibility errors during build.
+# v2024.01.21 is the last stable release with Python 3.11 + NDK r25b support.
+p4a.branch = v2024.01.21
 
 # Android NDK version
 android.ndk = 25b

@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v9
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v11
           restore-keys: buildozer-
 
       - name: Bootstrap Android SDK
@@ -76,28 +76,6 @@ jobs:
           ls "$SDK_DIR/build-tools/"
           echo "=== aidl path ==="
           find "$SDK_DIR/build-tools" -name aidl
-
-      - name: Pin python3 system-wide to Python 3.10
-        run: |
-          # python-for-android calls `python3` (not the full path) when creating
-          # the pip venv. On this runner, /usr/bin/python3 resolves to 3.14,
-          # which ships a pip version that's incompatible with the venv creation
-          # (ImportError: cannot import name 'BuildDependencyInstallError').
-          #
-          # Solution: place a wrapper script at the front of /usr/local/bin
-          # so any bare `python3` or `python` call during the build uses 3.10.
-          PYTHON310="$(which python3)"
-          echo "Pinning python3 -> $PYTHON310"
-
-          printf '#!/bin/sh\nexec %s "$@"\n' "$PYTHON310" | sudo tee /usr/local/bin/python3 > /dev/null
-          sudo chmod +x /usr/local/bin/python3
-
-          printf '#!/bin/sh\nexec %s "$@"\n' "$PYTHON310" | sudo tee /usr/local/bin/python > /dev/null
-          sudo chmod +x /usr/local/bin/python
-
-          echo "Verification:"
-          python3 --version
-          python --version
 
       - name: Build APK
         run: |
