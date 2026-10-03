@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v8
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v9
           restore-keys: buildozer-
 
       - name: Bootstrap Android SDK
@@ -50,7 +50,6 @@ jobs:
           SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
           SDKMANAGER="$SDK_DIR/cmdline-tools/latest/bin/sdkmanager"
 
-          # Download cmdline-tools only if not already cached
           if [ ! -f "$SDKMANAGER" ]; then
             echo "Downloading Android cmdline-tools..."
             mkdir -p "$SDK_DIR/cmdline-tools"
@@ -63,42 +62,53 @@ jobs:
             echo "cmdline-tools already cached, skipping download."
           fi
 
-          # Accept licenses
           yes | "$SDKMANAGER" --sdk_root="$SDK_DIR" --licenses || true
-
-          # Install required SDK components (idempotent — safe to re-run on cache hit)
           "$SDKMANAGER" --sdk_root="$SDK_DIR" \
             "build-tools;37.0.0" \
             "platforms;android-33" \
             "platform-tools"
 
-          # Create the legacy tools/bin symlinks buildozer checks for
           mkdir -p "$SDK_DIR/tools/bin"
           ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" "$SDK_DIR/tools/bin/sdkmanager"
           ln -sf "$SDK_DIR/cmdline-tools/latest/bin/avdmanager"  "$SDK_DIR/tools/bin/avdmanager"
 
-          # Verify aidl is present
           echo "=== Installed build-tools ==="
           ls "$SDK_DIR/build-tools/"
           echo "=== aidl path ==="
           find "$SDK_DIR/build-tools" -name aidl
 
+      - name: Pin python3 system-wide to Python 3.10
+        run: |
+          # python-for-android calls `python3` (not the full path) when creating
+          # the pip venv. On this runner, /usr/bin/python3 resolves to 3.14,
+          # which ships a pip version that's incompatible with the venv creation
+          # (ImportError: cannot import name 'BuildDependencyInstallError').
+          #
+          # Solution: place a wrapper script at the front of /usr/local/bin
+          # so any bare `python3` or `python` call during the build uses 3.10.
+          PYTHON310="$(which python3)"
+          echo "Pinning python3 -> $PYTHON310"
+
+          echo "#!/bin/sh
+exec $PYTHON310 \"\$@\"" | sudo tee /usr/local/bin/python3 > /dev/null
+          sudo chmod +x /usr/local/bin/python3
+
+          echo "#!/bin/sh
+exec $PYTHON310 \"\$@\"" | sudo tee /usr/local/bin/python > /dev/null
+          sudo chmod +x /usr/local/bin/python
+
+          echo "Verification:"
+          python3 --version
+          python --version
+
       - name: Build APK
         run: |
-          # Java 17
           export JAVA_HOME="$JAVA_HOME_17_X64"
           export PATH="$JAVA_HOME/bin:$PATH"
-
-          # Pin python3 to the setup-python 3.10 binary so python-for-android
-          # does not pick up the system python (3.14 on this runner image),
-          # which would produce a pip version mismatch (ImportError:
-          # cannot import name 'BuildDependencyInstallError').
-          export PATH="$(python3 -c 'import sys,os; print(os.path.dirname(sys.executable))'):$PATH"
           echo "Java:   $(java -version 2>&1 | head -1)"
           echo "Python: $(python3 --version)"
 
-          # Remove any stale venv left by a previously failed/cached build.
-          # A venv created by the wrong Python version will always fail.
+          # Remove any stale venv from a previously failed/cached build
           rm -rf ~/.buildozer/android/platform/build-*/build/venv
 
           buildozer -v android debug 2>&1
