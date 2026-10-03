@@ -28,7 +28,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git zip unzip \
+            git zip unzip wget \
             python3-pip autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev libncursesw5-dev \
             cmake libffi-dev libssl-dev
@@ -38,58 +38,73 @@ jobs:
           pip install --upgrade pip wheel
           pip install buildozer==1.5.0 cython==0.29.33
 
-      - name: Set up Android SDK and install build-tools
-        run: |
-          # Use the runner's pre-installed cmdline-tools to install what buildozer needs
-          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
-
-          echo "y" | $SDKMANAGER --sdk_root=$ANDROID_SDK_ROOT "build-tools;37.0.0" "platforms;android-33" "platform-tools" || true
-
-          # Accept all licenses
-          yes | $SDKMANAGER --sdk_root=$ANDROID_SDK_ROOT --licenses || true
-
-          echo "SDK root: $ANDROID_SDK_ROOT"
-          ls "$ANDROID_SDK_ROOT/build-tools/" || echo "build-tools not found"
-
-      - name: Point Buildozer at the pre-installed SDK
-        run: |
-          # Tell buildozer to reuse the runner's SDK instead of downloading a fresh one.
-          # This makes the build-tools and aidl available immediately.
-          mkdir -p ~/.buildozer/android/platform
-          ln -sfn "$ANDROID_SDK_ROOT" ~/.buildozer/android/platform/android-sdk
-          echo "Symlinked SDK: $(ls ~/.buildozer/android/platform/android-sdk/build-tools/)"
-
       - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.buildozer/android/packages
-            ~/.buildozer/android/platform/android-ndk-r25b
-            ~/.buildozer/android/platform/python-for-android
-            ~/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v6
+          path: ~/.buildozer
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v8
           restore-keys: buildozer-
 
-      - name: Build APK
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME_17_X64 }}
+      - name: Bootstrap Android SDK
         run: |
-          export JAVA_HOME=$JAVA_HOME_17_X64
-          export PATH=$JAVA_HOME/bin:$PATH
+          SDK_DIR="$HOME/.buildozer/android/platform/android-sdk"
+          SDKMANAGER="$SDK_DIR/cmdline-tools/latest/bin/sdkmanager"
 
-          # Ensure python3 resolves to the setup-python 3.10 binary,
-          # not the system python which may be 3.14+ on this runner image.
-          export PATH="$(python3 -c 'import sys, os; print(os.path.dirname(sys.executable))'):$PATH"
-          echo "Using python: $(which python3) -> $(python3 --version)"
+          # Download cmdline-tools only if not already cached
+          if [ ! -f "$SDKMANAGER" ]; then
+            echo "Downloading Android cmdline-tools..."
+            mkdir -p "$SDK_DIR/cmdline-tools"
+            wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+              -O /tmp/cmdline-tools.zip
+            unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools-extract
+            mv /tmp/cmdline-tools-extract/cmdline-tools "$SDK_DIR/cmdline-tools/latest"
+            rm -rf /tmp/cmdline-tools-extract /tmp/cmdline-tools.zip
+          else
+            echo "cmdline-tools already cached, skipping download."
+          fi
 
-          # Remove any stale venv from a previous failed/cached build
+          # Accept licenses
+          yes | "$SDKMANAGER" --sdk_root="$SDK_DIR" --licenses || true
+
+          # Install required SDK components (idempotent — safe to re-run on cache hit)
+          "$SDKMANAGER" --sdk_root="$SDK_DIR" \
+            "build-tools;37.0.0" \
+            "platforms;android-33" \
+            "platform-tools"
+
+          # Create the legacy tools/bin symlinks buildozer checks for
+          mkdir -p "$SDK_DIR/tools/bin"
+          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/sdkmanager" "$SDK_DIR/tools/bin/sdkmanager"
+          ln -sf "$SDK_DIR/cmdline-tools/latest/bin/avdmanager"  "$SDK_DIR/tools/bin/avdmanager"
+
+          # Verify aidl is present
+          echo "=== Installed build-tools ==="
+          ls "$SDK_DIR/build-tools/"
+          echo "=== aidl path ==="
+          find "$SDK_DIR/build-tools" -name aidl
+
+      - name: Build APK
+        run: |
+          # Java 17
+          export JAVA_HOME="$JAVA_HOME_17_X64"
+          export PATH="$JAVA_HOME/bin:$PATH"
+
+          # Pin python3 to the setup-python 3.10 binary so python-for-android
+          # does not pick up the system python (3.14 on this runner image),
+          # which would produce a pip version mismatch (ImportError:
+          # cannot import name 'BuildDependencyInstallError').
+          export PATH="$(python3 -c 'import sys,os; print(os.path.dirname(sys.executable))'):$PATH"
+          echo "Java:   $(java -version 2>&1 | head -1)"
+          echo "Python: $(python3 --version)"
+
+          # Remove any stale venv left by a previously failed/cached build.
+          # A venv created by the wrong Python version will always fail.
           rm -rf ~/.buildozer/android/platform/build-*/build/venv
 
           buildozer -v android debug 2>&1
           BUILD_EXIT=$?
           if [ $BUILD_EXIT -ne 0 ]; then
-            echo "=== BUILD FAILED ==="
-            echo "=== Last 150 lines of buildozer log ==="
+            echo "=== BUILD FAILED — last 150 log lines ==="
             find . -name "*.log" | xargs tail -150 2>/dev/null || true
             exit $BUILD_EXIT
           fi

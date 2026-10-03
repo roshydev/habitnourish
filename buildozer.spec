@@ -21,7 +21,10 @@ source.include_patterns = main.py,db.py,helpers.py,screens/*.py,*.csv
 version = 1.0
 
 # Python dependencies
-requirements = python3,kivy==2.3.1,sqlite3
+# certifi, charset-normalizer, idna, requests, urllib3 are pure-python
+# packages pulled in transitively by kivy; listing them here lets p4a
+# install them via pip rather than failing to find a recipe for them.
+requirements = python3,kivy==2.3.1,sqlite3,certifi,charset-normalizer,idna,requests,urllib3,six
 
 # Android orientation
 orientation = portrait
