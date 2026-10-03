@@ -21,11 +21,11 @@ source.include_patterns = main.py,db.py,helpers.py,screens/*.py,*.csv
 version = 1.0
 
 # Python dependencies
-# requests is listed explicitly so p4a uses its own recipe which handles
-# charset-normalizer correctly for ARM. Do NOT add charset-normalizer
-# directly — versions >= 3.0.0 have a compiled C extension (md.so) that
-# cannot be pip-installed for Android and will cause an architecture mismatch.
-requirements = python3,kivy==2.3.1,sqlite3,certifi,idna,requests,urllib3,six
+# - chardet is required by the kivy recipe in p4a v2024.01.21 (python_depends)
+# - Do NOT add charset-normalizer directly — v>=3.0.0 has a compiled C
+#   extension (md.so) that causes architecture mismatch on ARM devices.
+# - kivy version is set to 2.3.0 to match the p4a v2024.01.21 recipe exactly.
+requirements = python3,kivy==2.3.0,sqlite3,certifi,chardet,idna,requests,urllib3,six
 
 # Android orientation
 orientation = portrait
