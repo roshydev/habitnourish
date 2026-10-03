@@ -13,7 +13,7 @@ package.domain = com.roshydev
 source.dir = .
 
 # Entry point
-source.include_exts = py,png,jpg,kv,atlas,csv,db
+source.include_exts = py,png,jpg,kv,atlas,csv
 
 # Include all your source files
 source.include_patterns = main.py,db.py,helpers.py,screens/*.py,*.csv

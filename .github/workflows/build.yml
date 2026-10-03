@@ -89,12 +89,10 @@ jobs:
           PYTHON310="$(which python3)"
           echo "Pinning python3 -> $PYTHON310"
 
-          echo "#!/bin/sh
-exec $PYTHON310 \"\$@\"" | sudo tee /usr/local/bin/python3 > /dev/null
+          printf '#!/bin/sh\nexec %s "$@"\n' "$PYTHON310" | sudo tee /usr/local/bin/python3 > /dev/null
           sudo chmod +x /usr/local/bin/python3
 
-          echo "#!/bin/sh
-exec $PYTHON310 \"\$@\"" | sudo tee /usr/local/bin/python > /dev/null
+          printf '#!/bin/sh\nexec %s "$@"\n' "$PYTHON310" | sudo tee /usr/local/bin/python > /dev/null
           sudo chmod +x /usr/local/bin/python
 
           echo "Verification:"
