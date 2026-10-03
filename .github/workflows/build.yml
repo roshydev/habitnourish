@@ -38,11 +38,36 @@ jobs:
           pip install --upgrade pip wheel
           pip install buildozer==1.5.0 cython==0.29.33
 
+      - name: Set up Android SDK and install build-tools
+        run: |
+          # Use the runner's pre-installed cmdline-tools to install what buildozer needs
+          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+
+          echo "y" | $SDKMANAGER --sdk_root=$ANDROID_SDK_ROOT "build-tools;37.0.0" "platforms;android-33" "platform-tools" || true
+
+          # Accept all licenses
+          yes | $SDKMANAGER --sdk_root=$ANDROID_SDK_ROOT --licenses || true
+
+          echo "SDK root: $ANDROID_SDK_ROOT"
+          ls "$ANDROID_SDK_ROOT/build-tools/" || echo "build-tools not found"
+
+      - name: Point Buildozer at the pre-installed SDK
+        run: |
+          # Tell buildozer to reuse the runner's SDK instead of downloading a fresh one.
+          # This makes the build-tools and aidl available immediately.
+          mkdir -p ~/.buildozer/android/platform
+          ln -sfn "$ANDROID_SDK_ROOT" ~/.buildozer/android/platform/android-sdk
+          echo "Symlinked SDK: $(ls ~/.buildozer/android/platform/android-sdk/build-tools/)"
+
       - name: Cache Buildozer global directory
         uses: actions/cache@v4
         with:
-          path: ~/.buildozer
-          key: buildozer-${{ hashFiles('buildozer.spec') }}-v5
+          path: |
+            ~/.buildozer/android/packages
+            ~/.buildozer/android/platform/android-ndk-r25b
+            ~/.buildozer/android/platform/python-for-android
+            ~/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a
+          key: buildozer-${{ hashFiles('buildozer.spec') }}-v6
           restore-keys: buildozer-
 
       - name: Build APK
@@ -52,14 +77,12 @@ jobs:
           export JAVA_HOME=$JAVA_HOME_17_X64
           export PATH=$JAVA_HOME/bin:$PATH
 
-          # Ensure the python3 on PATH is the one set up by actions/setup-python (3.10),
-          # not any system python that could be 3.14+. This prevents python-for-android
-          # from creating a venv with a mismatched pip version (ImportError on
-          # BuildDependencyInstallError).
+          # Ensure python3 resolves to the setup-python 3.10 binary,
+          # not the system python which may be 3.14+ on this runner image.
           export PATH="$(python3 -c 'import sys, os; print(os.path.dirname(sys.executable))'):$PATH"
           echo "Using python: $(which python3) -> $(python3 --version)"
 
-          # Remove any stale venv from a previous failed build that may be cached
+          # Remove any stale venv from a previous failed/cached build
           rm -rf ~/.buildozer/android/platform/build-*/build/venv
 
           buildozer -v android debug 2>&1
