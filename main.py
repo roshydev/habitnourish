@@ -29,7 +29,13 @@ from screens.analytics  import AnalyticsScreen
 from screens.meal_plan  import MealPlanScreen
 from screens.lifestyle  import LifestyleScreen
 
-Window.size = (390, 844)
+# Fix window size only on desktop for development preview.
+# On Android, Kivy uses the full screen automatically.
+try:
+    from android import mActivity  # noqa — only present on Android
+except ImportError:
+    Window.size = (390, 844)  # Desktop preview size only
+
 Window.clearcolor = (0.945, 0.973, 0.914, 1)
 
 
