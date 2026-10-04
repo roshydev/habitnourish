@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.text import Label as CoreLabel
 from kivy.graphics import Color, Line, Rectangle
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
@@ -11,7 +12,7 @@ from kivy.uix.progressbar import ProgressBar
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.uix.widget import Widget
 
-from db import week_nutrients, meal_breakdown, get_lifestyle_history
+from db import week_nutrients, meal_breakdown, get_lifestyle_history, get_user_targets
 from helpers import (C_GREEN, C_DARK_GREEN, C_BLUE, C_RED, C_ORANGE,
                      C_GREY, C_TEXT, C_WHITE,
                      styled_btn, lbl, spacer, card_box,
@@ -31,14 +32,26 @@ class AnalyticsScreen(Screen):
         "protein": 50, "carbs": 260, "fat": 70, "fiber": 25, "sugar": 50
     }
 
-    # ── Nutrition chart drawing ───────────────────────────────────────────────
-    def _draw_chart(self, widget, all_days, nutrient_data, cal_target, series):
-        all_vals = []
-        for d in all_days:
-            nd = nutrient_data[d]
-            all_vals.extend([nd[k] for k, _, _ in series])
-        global_max = max(all_vals) if any(v > 0 for v in all_vals) else max(cal_target, 1)
+    # ── Canvas text helper ────────────────────────────────────────────────────
+    @staticmethod
+    def _bar_label(canvas, text, cx, y, color=(0.2, 0.2, 0.2, 1), font_size=None):
+        """Draw a small centered value label at (cx, y) on the given canvas.
 
+        cx = horizontal center of the bar, y = baseline (bottom of the text).
+        Uses a CoreLabel texture so it can be placed on a raw graphics canvas.
+        """
+        if font_size is None:
+            font_size = dp(8)
+        cl = CoreLabel(text=text, font_size=font_size, bold=True)
+        cl.refresh()
+        tex = cl.texture
+        tw, th = tex.size
+        with canvas:
+            Color(*color)
+            Rectangle(texture=tex, pos=(cx - tw / 2, y), size=(tw, th))
+
+    # ── Nutrition chart drawing (percentage-of-target) ────────────────────────
+    def _draw_chart(self, widget, all_days, nutrient_data, cal_target, series):
         targets = {
             "calories": cal_target,
             "protein":  self.TARGETS["protein"],
@@ -47,6 +60,25 @@ class AnalyticsScreen(Screen):
             "fiber":    self.TARGETS["fiber"],
             "sugar":    self.TARGETS["sugar"],
         }
+        # "Cap" nutrients: going over target is bad (red when > 100%).
+        # Protein & fiber are "aim for at least" goals (not penalized).
+        cap_keys = {"calories", "carbs", "fat", "sugar"}
+
+        def _pct(key, val):
+            tgt = targets.get(key)
+            if not tgt:
+                return 0
+            return (val / tgt) * 100.0
+
+        # Y-axis tops out at the larger of 100% or the biggest value, so an
+        # over-target bar still fits. Clamp the ceiling so one huge day doesn't
+        # flatten everything.
+        all_pcts = []
+        for d in all_days:
+            nd = nutrient_data[d]
+            all_pcts.extend([_pct(k, nd[k]) for k, _, _ in series])
+        max_pct = max(all_pcts) if any(p > 0 for p in all_pcts) else 100
+        y_top = max(100, min(max_pct, 200))  # cap display ceiling at 200%
 
         def _draw(w, *_):
             w.canvas.clear()
@@ -62,41 +94,74 @@ class AnalyticsScreen(Screen):
             group_w  = usable_w / n_days
             gap, bar_gap = dp(4), dp(1)
             bar_w = max((group_w - gap) / n_series - bar_gap, dp(2))
-            scale = usable_h / (global_max * 1.15) if global_max else 1
+            scale = usable_h / (y_top * 1.1) if y_top else 1
 
             with w.canvas:
+                # Single 100% target reference line across the whole chart
+                ty = base_y + min(100 * scale, usable_h)
+                Color(0.45, 0.45, 0.45, 0.9)
+                seg, gap_s = dp(5), dp(3)
+                x = w.x + left_m
+                while x < w.x + left_m + usable_w:
+                    x1 = min(x + seg, w.x + left_m + usable_w)
+                    Line(points=[x, ty, x1, ty], width=1.2)
+                    x += seg + gap_s
+
                 for di, d in enumerate(all_days):
                     nd     = nutrient_data[d]
                     grp_x0 = w.x + left_m + di * group_w + gap / 2
                     for si, (key, _, color) in enumerate(series):
-                        val = nd[key]
+                        pct = _pct(key, nd[key])
                         bx  = grp_x0 + si * (bar_w + bar_gap)
-                        bh  = min(val * scale, usable_h) if val else 0
-                        if key == "calories" and cal_target and val > cal_target:
+                        bh  = min(pct * scale, usable_h) if pct else 0
+                        # Cap nutrient over 100% = red; otherwise series color
+                        if key in cap_keys and pct > 100:
                             Color(0.85, 0.15, 0.15, 1)
                         else:
                             Color(*color)
                         Rectangle(pos=(bx, base_y), size=(bar_w, bh))
-                    for si, (key, _, color) in enumerate(series):
-                        tgt = targets.get(key)
-                        if tgt is None or nd[key] == 0:
-                            continue
-                        ty  = base_y + min(tgt * scale, usable_h)
-                        bx  = grp_x0 + si * (bar_w + bar_gap)
-                        Color(0.58, 0.0, 0.83, 0.8)
-                        seg, gap_s = dp(3), dp(2)
-                        x = bx
-                        while x < bx + bar_w:
-                            x1 = min(x + seg, bx + bar_w)
-                            Line(points=[x, ty, x1, ty], width=1.5)
-                            x += seg + gap_s
+
+            # Percentage labels on top of each bar
+            for di, d in enumerate(all_days):
+                nd     = nutrient_data[d]
+                grp_x0 = w.x + left_m + di * group_w + gap / 2
+                for si, (key, _, color) in enumerate(series):
+                    pct = _pct(key, nd[key])
+                    if not pct:
+                        continue
+                    bx  = grp_x0 + si * (bar_w + bar_gap)
+                    bh  = min(pct * scale, usable_h)
+                    cx  = bx + bar_w / 2
+                    ly  = base_y + bh + dp(1)
+                    ly  = min(ly, w.y + ch - dp(9))
+                    over = (key in cap_keys and pct > 100)
+                    lab_col = (0.85, 0.15, 0.15, 1) if over else (0.25, 0.25, 0.25, 1)
+                    self._bar_label(w.canvas, f"{int(round(pct))}%",
+                                    cx, ly, color=lab_col, font_size=dp(7))
 
         widget.bind(pos=_draw, size=_draw)
         _draw(widget)
 
-    # ── Lifestyle chart drawing ───────────────────────────────────────────────
+    # ── Lifestyle chart drawing (percentage-of-target) ────────────────────────
     def _draw_lifestyle_chart(self, widget, all_days, lifestyle_dict, series, targets):
-        global_max = max([s[3] for s in series])
+        # Sleep / Exercise / Water are "aim for at least" goals (green when
+        # met/over). Stress is a cap (bad when over target -> red).
+        cap_keys = {"stress_level"}
+
+        def _pct(key, val):
+            tgt = targets.get(key)
+            if not tgt:
+                return 0
+            return (val / tgt) * 100.0
+
+        # Display ceiling: at least 100%, cap at 200% so one big day doesn't
+        # flatten the rest.
+        all_pcts = []
+        for d in all_days:
+            entry = lifestyle_dict.get(d, {})
+            all_pcts.extend([_pct(k, entry.get(k, 0) or 0) for k, _, _, _ in series])
+        max_pct = max(all_pcts) if any(p > 0 for p in all_pcts) else 100
+        y_top = max(100, min(max_pct, 200))
 
         def _draw(w, *_):
             w.canvas.clear()
@@ -112,44 +177,81 @@ class AnalyticsScreen(Screen):
             group_w  = usable_w / n_days
             gap, bar_gap = dp(4), dp(1)
             bar_w = max((group_w - gap) / n_series - bar_gap, dp(2))
-            scale = usable_h / (global_max * 1.15) if global_max else 1
+            scale = usable_h / (y_top * 1.1) if y_top else 1
 
             with w.canvas:
+                # Single 100% target reference line across the whole chart
+                ty = base_y + min(100 * scale, usable_h)
+                Color(0.45, 0.45, 0.45, 0.9)
+                seg, gap_s = dp(5), dp(3)
+                x = w.x + left_m
+                while x < w.x + left_m + usable_w:
+                    x1 = min(x + seg, w.x + left_m + usable_w)
+                    Line(points=[x, ty, x1, ty], width=1.2)
+                    x += seg + gap_s
+
                 for di, d in enumerate(all_days):
                     entry  = lifestyle_dict.get(d, {})
                     grp_x0 = w.x + left_m + di * group_w + gap / 2
-                    for si, (key, _, color, max_val) in enumerate(series):
+                    for si, (key, _, color, _max_val) in enumerate(series):
                         val = entry.get(key, 0) or 0
+                        pct = _pct(key, val)
                         bx  = grp_x0 + si * (bar_w + bar_gap)
-                        normalized_val = val * (global_max / max_val)
-                        bh  = min(normalized_val * scale, usable_h) if val else 0
-                        if key == "stress_level" and val > 0:
-                            if val <= 3:
-                                Color(0.298, 0.686, 0.314, 1)
-                            elif val <= 6:
-                                Color(1.0, 0.596, 0.0, 1)
-                            else:
-                                Color(0.957, 0.263, 0.212, 1)
+                        bh  = min(pct * scale, usable_h) if pct else 0
+                        # Stress over target = red; other metrics keep color
+                        if key in cap_keys and pct > 100:
+                            Color(0.85, 0.15, 0.15, 1)
                         else:
                             Color(*color)
                         Rectangle(pos=(bx, base_y), size=(bar_w, bh))
-                    for si, (key, _, color, max_val) in enumerate(series):
-                        tgt = targets.get(key)
-                        if tgt is None or (entry.get(key, 0) or 0) == 0:
-                            continue
-                        normalized_tgt = tgt * (global_max / max_val)
-                        ty  = base_y + min(normalized_tgt * scale, usable_h)
-                        bx  = grp_x0 + si * (bar_w + bar_gap)
-                        Color(0.58, 0.0, 0.83, 0.8)
-                        seg, gap_s = dp(3), dp(2)
-                        x = bx
-                        while x < bx + bar_w:
-                            x1 = min(x + seg, bx + bar_w)
-                            Line(points=[x, ty, x1, ty], width=1.5)
-                            x += seg + gap_s
+
+            # Percentage labels on top of each lifestyle bar
+            for di, d in enumerate(all_days):
+                entry  = lifestyle_dict.get(d, {})
+                grp_x0 = w.x + left_m + di * group_w + gap / 2
+                for si, (key, _, color, _max_val) in enumerate(series):
+                    val = entry.get(key, 0) or 0
+                    pct = _pct(key, val)
+                    if not pct:
+                        continue
+                    bx  = grp_x0 + si * (bar_w + bar_gap)
+                    bh  = min(pct * scale, usable_h)
+                    cx  = bx + bar_w / 2
+                    ly  = base_y + bh + dp(1)
+                    ly  = min(ly, w.y + ch - dp(9))
+                    over = (key in cap_keys and pct > 100)
+                    lab_col = (0.85, 0.15, 0.15, 1) if over else (0.25, 0.25, 0.25, 1)
+                    self._bar_label(w.canvas, f"{int(round(pct))}%",
+                                    cx, ly, color=lab_col, font_size=dp(7))
 
         widget.bind(pos=_draw, size=_draw)
         _draw(widget)
+
+    # ── Day status rule ───────────────────────────────────────────────────────
+    def _day_over(self, nd, cal_target):
+        """A day is 'over' if any cap nutrient exceeds its target.
+
+        Cap nutrients (going over is bad): calories, carbs, fat, sugar.
+        Protein and fiber are 'aim for at least' goals, so they never make a
+        day 'over'. Returns True if the day is over on at least one cap.
+        """
+        caps = {
+            "calories": cal_target,
+            "carbs":    self.TARGETS["carbs"],
+            "fat":      self.TARGETS["fat"],
+            "sugar":    self.TARGETS["sugar"],
+        }
+        return any(nd.get(k, 0) > tgt for k, tgt in caps.items() if tgt)
+
+    def _day_over_reasons(self, nd, cal_target):
+        """Return list of human-readable cap nutrients that are over target."""
+        caps = [
+            ("Cal",   "calories", cal_target),
+            ("Carb",  "carbs",    self.TARGETS["carbs"]),
+            ("Fat",   "fat",      self.TARGETS["fat"]),
+            ("Sugar", "sugar",    self.TARGETS["sugar"]),
+        ]
+        return [label for label, key, tgt in caps if tgt and nd.get(key, 0) > tgt]
 
     # ── Static helpers ────────────────────────────────────────────────────────
     @staticmethod
@@ -214,7 +316,8 @@ class AnalyticsScreen(Screen):
                                           size_hint_y=None, height=dp(300))
         self.chart_container.add_widget(self._legend(self.SERIES))
         self.chart_container.add_widget(lbl(
-            "Violet dashes = target per nutrient  |  Red Cal bar = over target",
+            "Bars show % of your target  |  Dashed line = 100%  |  "
+            "Red = over target (Cal/Carb/Fat/Sugar)",
             size=dp(9), color=C_GREY, h=dp(16)))
 
         chart_w = Widget(size_hint=(1, None), height=dp(220))
@@ -240,11 +343,12 @@ class AnalyticsScreen(Screen):
             ("water_liters", "Water",    (0.0,   0.7,   0.7,   1), 4),
             ("stress_level", "Stress",   (1.0,   0.596, 0.0,   1), 10),
         ]
+        ut = getattr(self, "_user_targets", {})
         LIFESTYLE_TARGETS = {
-            "sleep_hours":  8,
-            "exercise_min": 30,
-            "water_liters": 2.5,
-            "stress_level": 3,
+            "sleep_hours":  ut.get("sleep_hours", 8),
+            "exercise_min": ut.get("exercise_min", 30),
+            "water_liters": ut.get("water_liters", 2.5),
+            "stress_level": ut.get("stress_level", 5),
         }
 
         self.chart_container = BoxLayout(orientation="vertical",
@@ -259,7 +363,8 @@ class AnalyticsScreen(Screen):
                 halign="center", size_hint=(1, None), height=dp(20)))
         self.chart_container.add_widget(legend)
         self.chart_container.add_widget(lbl(
-            "Violet dashes = target for each metric",
+            "Bars show % of your target  |  Dashed line = 100%  |  "
+            "Red = Stress over target",
             size=dp(9), color=C_GREY, h=dp(16)))
 
         chart_w = Widget(size_hint=(1, None), height=dp(220))
@@ -299,7 +404,18 @@ class AnalyticsScreen(Screen):
         self.clear_widgets()
         app    = App.get_running_app()
         uid    = app.user_id
-        target = app.profile.get("target", 2000)
+
+        # Load the user's custom targets (falls back to defaults)
+        user_targets = get_user_targets(uid)
+        self._user_targets = user_targets
+        target = user_targets["calories"]
+        self.TARGETS = {
+            "protein": user_targets["protein"],
+            "carbs":   user_targets["carbs"],
+            "fat":     user_targets["fat"],
+            "fiber":   user_targets["fiber"],
+            "sugar":   user_targets["sugar"],
+        }
 
         outer = BoxLayout(orientation="vertical")
         outer.add_widget(header_bar("Analytics",
@@ -341,8 +457,11 @@ class AnalyticsScreen(Screen):
         layout.add_widget(spacer())
 
         # ── Week summary card ────────────────────────────────────────────────
-        met  = sum(1 for d in all_days if 0 < nutrient_data[d]["calories"] <= target)
-        over = sum(1 for d in all_days if nutrient_data[d]["calories"] > target)
+        # A day is "over" if ANY cap nutrient (calories/carbs/fat/sugar) exceeds
+        # its target. "On target" means all cap nutrients are within target.
+        # Protein & fiber are "aim for at least" goals and don't count against.
+        met = sum(1 for d in active_days if not self._day_over(nutrient_data[d], target))
+        over = sum(1 for d in active_days if self._day_over(nutrient_data[d], target))
         no_d = len(all_days) - len(active_days)
         wc   = card_box(height=dp(40))
         wc.add_widget(lbl(
@@ -350,6 +469,9 @@ class AnalyticsScreen(Screen):
             f"✗ {over} days over  – {no_d} days no data",
             size=dp(11), color=C_DARK_GREEN, bold=True, h=dp(32)))
         layout.add_widget(wc)
+        layout.add_widget(lbl(
+            "A day is \"over\" if Calories, Carbs, Fat or Sugar exceed target.",
+            size=dp(9), color=C_GREY, h=dp(16)))
         layout.add_widget(spacer())
 
         # ── Detailed table ───────────────────────────────────────────────────
@@ -387,10 +509,10 @@ class AnalyticsScreen(Screen):
             cal   = nd["calories"]
             if cal == 0:
                 status_sym, s_col = "–", C_GREY
-            elif cal <= target:
-                status_sym, s_col = "✓", C_GREEN
-            else:
+            elif self._day_over(nd, target):
                 status_sym, s_col = "✗", C_RED
+            else:
+                status_sym, s_col = "✓", C_GREEN
             row = card_box(height=dp(44))
             row.add_widget(lbl(short, size=dp(9), h=dp(36)))
             row.add_widget(val_cell(nd["calories"], nut_targets["calories"]))

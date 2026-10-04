@@ -50,6 +50,12 @@ def card_box(height=dp(80), bg=C_CARD, padding=dp(10), spacing=dp(6)):
            size=lambda o, v: setattr(o._rect, "size", v))
     return w
 
+def darken(color, factor=0.75):
+    """Return a darker shade of an RGBA color (keeps alpha)."""
+    r, g, b = color[0], color[1], color[2]
+    a = color[3] if len(color) > 3 else 1
+    return (r * factor, g * factor, b * factor, a)
+
 def header_bar(title, back_cb=None, bg=C_GREEN, right_btn=None):
     bar = BoxLayout(orientation="horizontal", size_hint_y=None,
                     height=dp(56), padding=dp(8), spacing=dp(6))
@@ -59,7 +65,8 @@ def header_bar(title, back_cb=None, bg=C_GREEN, right_btn=None):
     bar.bind(pos=lambda o, v: setattr(o._rect, "pos", v),
              size=lambda o, v: setattr(o._rect, "size", v))
     if back_cb:
-        b = styled_btn("< Back", bg=C_DARK_GREEN, height=dp(38), width=dp(68))
+        # Home button themed to the header: a darker shade of the header color
+        b = styled_btn("Home", bg=darken(bg), height=dp(38), width=dp(68))
         b.bind(on_release=lambda *_: back_cb())
         bar.add_widget(b)
     bar.add_widget(Label(text=title, color=C_WHITE, font_size=dp(15),
@@ -139,6 +146,34 @@ def show_popup(title, message, on_ok=None):
         if on_ok:
             on_ok()
     btn.bind(on_release=_ok)
+    p.open()
+
+def confirm_popup(title, message, on_confirm,
+                  confirm_text="Delete", confirm_bg=None):
+    """Ask the user to confirm a destructive action.
+
+    Shows [Cancel] [confirm_text]. Runs on_confirm() only if confirmed.
+    """
+    if confirm_bg is None:
+        confirm_bg = (0.957, 0.263, 0.212, 1)  # C_RED
+    content = BoxLayout(orientation="vertical", padding=dp(14), spacing=dp(12))
+    content.add_widget(Label(text=message, halign="center", valign="middle",
+                              font_size=dp(13), color=C_TEXT))
+    btn_row = BoxLayout(orientation="horizontal", size_hint_y=None,
+                        height=dp(44), spacing=dp(10))
+    cancel_btn  = styled_btn("Cancel", bg=(0.62, 0.62, 0.62, 1), height=dp(42))
+    confirm_btn = styled_btn(confirm_text, bg=confirm_bg, height=dp(42))
+    btn_row.add_widget(cancel_btn)
+    btn_row.add_widget(confirm_btn)
+    content.add_widget(btn_row)
+    p = Popup(title=title, content=content,
+              size_hint=(0.85, None), height=dp(220),
+              auto_dismiss=True)
+    cancel_btn.bind(on_release=lambda *_: p.dismiss())
+    def _confirm(*_):
+        p.dismiss()
+        on_confirm()
+    confirm_btn.bind(on_release=_confirm)
     p.open()
 
 def go_screen(manager, screen, direction="left"):

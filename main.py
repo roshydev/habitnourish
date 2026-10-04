@@ -28,6 +28,7 @@ from screens.progress   import ProgressScreen
 from screens.analytics  import AnalyticsScreen
 from screens.meal_plan  import MealPlanScreen
 from screens.lifestyle  import LifestyleScreen
+from screens.edit_targets import EditTargetsScreen
 
 # Fix window size only on desktop for development preview.
 # On Android, Kivy uses the full screen automatically.
@@ -63,6 +64,7 @@ class HabitNourishApp(App):
         sm.add_widget(ResetPwScreen(name="reset_pw"))
         sm.add_widget(ProfileScreen(name="profile"))
         sm.add_widget(DashboardScreen(name="dashboard"))
+        sm.add_widget(EditTargetsScreen(name="edit_targets"))
         sm.add_widget(DietPlanScreen(name="diet_plan"))
         sm.add_widget(FoodLogScreen(name="food_log"))
         sm.add_widget(CustomFoodScreen(name="custom_food"))

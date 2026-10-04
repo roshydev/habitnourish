@@ -6,8 +6,8 @@ from kivy.uix.label import Label
 from kivy.uix.progressbar import ProgressBar
 from kivy.uix.screenmanager import Screen, SlideTransition
 
-from db import today_totals, today_log
-from helpers import (C_GREEN, C_DARK_GREEN, C_BLUE, C_RED, C_ORANGE,
+from db import today_totals
+from helpers import (C_GREEN, C_DARK_GREEN, C_LIGHT_GREEN, C_RED, C_ORANGE,
                      C_GREY, C_TEXT, C_WHITE,
                      styled_btn, lbl, spacer, card_box,
                      scroll_layout, header_bar)
@@ -27,11 +27,19 @@ class DashboardScreen(Screen):
 
         outer = BoxLayout(orientation="vertical")
 
+        # Right-side header controls: Settings (profile) + Logout
+        right_box = BoxLayout(orientation="horizontal", size_hint=(None, 1),
+                              width=dp(132), spacing=dp(6))
+        settings_btn = styled_btn("Settings", bg=C_GREY,
+                                  height=dp(34), width=dp(72), font_size=dp(11))
+        settings_btn.bind(on_release=lambda *_: self._go("profile"))
         logout_btn = styled_btn("Logout", bg=C_RED,
                                  height=dp(34), width=dp(72), font_size=dp(11))
         logout_btn.bind(on_release=lambda *_: self._logout())
+        right_box.add_widget(settings_btn)
+        right_box.add_widget(logout_btn)
         outer.add_widget(header_bar("HabitNourish", bg=C_DARK_GREEN,
-                                     right_btn=logout_btn))
+                                     right_btn=right_box))
 
         sv, layout = scroll_layout()
 
@@ -70,53 +78,35 @@ class DashboardScreen(Screen):
         layout.add_widget(spacer())
         layout.add_widget(lbl("Quick Actions", bold=True, size=dp(14), h=dp(28)))
 
-        # Row 1
+        # Row 1 — Daily tracking (medium green)
         r1 = BoxLayout(orientation="horizontal", size_hint_y=None,
                        height=dp(48), spacing=dp(6))
-        for txt, scr in [("Diet Plan", "diet_plan"),
-                          ("Log Food",  "food_log"),
-                          ("Progress",  "progress")]:
+        for txt, scr in [("Log Food",  "food_log"),
+                         ("Lifestyle", "lifestyle")]:
             b = styled_btn(txt, bg=C_GREEN, height=dp(44))
             b.bind(on_release=lambda *_, s=scr: self._go(s))
             r1.add_widget(b)
         layout.add_widget(r1)
 
-        # Row 2
+        # Row 2 — Input & planning (dark green)
         r2 = BoxLayout(orientation="horizontal", size_hint_y=None,
                        height=dp(48), spacing=dp(6))
-        for txt, scr, color in [("Analytics", "analytics",  C_DARK_GREEN),
-                                 ("Meal Plan", "meal_plan",  C_DARK_GREEN),
-                                 ("Lifestyle", "lifestyle",  C_BLUE)]:
-            b = styled_btn(txt, bg=color, height=dp(44))
+        for txt, scr in [("Custom Food", "custom_food"),
+                         ("Meal Plan",   "meal_plan")]:
+            b = styled_btn(txt, bg=C_DARK_GREEN, height=dp(44))
             b.bind(on_release=lambda *_, s=scr: self._go(s))
             r2.add_widget(b)
         layout.add_widget(r2)
 
-        # Row 3
+        # Row 3 — Review & insights (light green)
         r3 = BoxLayout(orientation="horizontal", size_hint_y=None,
                        height=dp(48), spacing=dp(6))
-        for txt, scr, color in [("My Profile", "profile",     C_GREY),
-                                 ("Add Food",   "custom_food", C_DARK_GREEN)]:
-            b = styled_btn(txt, bg=color, height=dp(44))
+        for txt, scr in [("Progress",  "progress"),
+                         ("Analytics", "analytics")]:
+            b = styled_btn(txt, bg=C_LIGHT_GREEN, height=dp(44))
             b.bind(on_release=lambda *_, s=scr: self._go(s))
             r3.add_widget(b)
         layout.add_widget(r3)
-
-        # Recent log
-        log = today_log(uid)
-        if log:
-            layout.add_widget(spacer())
-            layout.add_widget(lbl("Today's Log (Recent)", bold=True,
-                                   size=dp(14), h=dp(28)))
-            for entry in log[:5]:
-                row2 = card_box(height=dp(44))
-                row2.add_widget(lbl(
-                    f"[{entry['meal']}] {entry['food_name']} {int(entry['grams'])}g",
-                    size=dp(11), h=dp(36)))
-                row2.add_widget(lbl(f"{int(entry['calories'])} kcal",
-                                     size=dp(11), color=C_ORANGE,
-                                     halign="right", h=dp(36)))
-                layout.add_widget(row2)
 
         layout.add_widget(spacer(dp(20)))
         outer.add_widget(sv)

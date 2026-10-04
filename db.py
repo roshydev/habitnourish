@@ -108,6 +108,44 @@ def save_user_food(food_dict, email):
             "created_by": email,
         })
 
+def master_food_exists(name):
+    """Case-insensitive check whether a food name is already in the master sheet."""
+    target = name.strip().lower()
+    return any(f["name"].strip().lower() == target for f in load_master_foods())
+
+def save_master_food(food_dict):
+    """Append a new food to master_foods.csv (shared, app-wide list).
+
+    Returns (ok, error_message). Refuses duplicates by name (case-insensitive).
+    """
+    name = food_dict.get("name", "").strip()
+    if not name:
+        return False, "Food name is required."
+    if master_food_exists(name):
+        return False, f'"{name}" already exists in the master sheet.'
+
+    path = get_csv_path("master_foods.csv")
+    file_exists = os.path.exists(path)
+    fieldnames = ["type", "name", "calories", "protein", "carbs",
+                  "fat", "fiber", "sugar", "sodium", "category"]
+    with open(path, "a", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow({
+            "type":     food_dict["type"],
+            "name":     name,
+            "calories": food_dict.get("calories", 0),
+            "protein":  food_dict.get("protein", 0),
+            "carbs":    food_dict.get("carbs", 0),
+            "fat":      food_dict.get("fat", 0),
+            "fiber":    food_dict.get("fiber", 0),
+            "sugar":    food_dict.get("sugar", 0),
+            "sodium":   food_dict.get("sodium", 0),
+            "category": food_dict.get("category", "Custom"),
+        })
+    return True, None
+
 def get_all_foods(email=""):
     """Master + user foods combined."""
     foods = load_master_foods()
@@ -190,6 +228,57 @@ def init_db():
         water_liters  REAL,
         screen_hours  REAL,
         notes         TEXT,
+        FOREIGN KEY(user_id) REFERENCES users(id)
+    )""")
+    conn.commit()
+    
+    c.execute("""CREATE TABLE IF NOT EXISTS meal_plans(
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        plan_name   TEXT UNIQUE,
+        description TEXT,
+        created_at  TEXT
+    )""")
+    conn.commit()
+    
+    c.execute("""CREATE TABLE IF NOT EXISTS meal_plan_items(
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        plan_id     INTEGER,
+        day         INTEGER,
+        meal_type   TEXT,
+        food_name   TEXT,
+        grams       REAL,
+        calories    REAL,
+        protein     REAL,
+        carbs       REAL,
+        fat         REAL,
+        fiber       REAL,
+        FOREIGN KEY(plan_id) REFERENCES meal_plans(id) ON DELETE CASCADE
+    )""")
+    conn.commit()
+    
+    c.execute("""CREATE TABLE IF NOT EXISTS user_selected_plan(
+        id          INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id     INTEGER UNIQUE,
+        plan_id     INTEGER,
+        selected_at TEXT,
+        FOREIGN KEY(user_id) REFERENCES users(id),
+        FOREIGN KEY(plan_id) REFERENCES meal_plans(id)
+    )""")
+    conn.commit()
+
+    c.execute("""CREATE TABLE IF NOT EXISTS user_targets(
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id         INTEGER UNIQUE,
+        calories        INTEGER DEFAULT 2000,
+        protein         REAL DEFAULT 50,
+        carbs           REAL DEFAULT 260,
+        fat             REAL DEFAULT 70,
+        fiber           REAL DEFAULT 25,
+        sugar           REAL DEFAULT 50,
+        sleep_hours     REAL DEFAULT 8,
+        exercise_min    INTEGER DEFAULT 30,
+        water_liters    REAL DEFAULT 2.5,
+        stress_level    INTEGER DEFAULT 5,
         FOREIGN KEY(user_id) REFERENCES users(id)
     )""")
     conn.commit()
@@ -309,6 +398,20 @@ def log_food(user_id, meal, food, grams):
         "protein,carbs,fat,fiber) VALUES(?,?,?,?,?,?,?,?,?,?)",
         (user_id, str(date.today()), meal, food["name"], grams,
          s["calories"], s["protein"], s["carbs"], s["fat"], s["fiber"]))
+    conn.commit()
+    conn.close()
+
+def log_plan_item(user_id, meal, item):
+    """Log a meal-plan item whose nutrient values are ALREADY scaled for its
+    grams. Unlike log_food(), this does not re-scale (plan items store absolute
+    values, not per-100g), so it inserts the values as-is."""
+    conn = get_conn()
+    conn.execute(
+        "INSERT INTO food_log(user_id,date,meal,food_name,grams,calories,"
+        "protein,carbs,fat,fiber) VALUES(?,?,?,?,?,?,?,?,?,?)",
+        (user_id, str(date.today()), meal, item["food_name"], item["grams"],
+         item["calories"], item["protein"], item["carbs"],
+         item["fat"], item["fiber"]))
     conn.commit()
     conn.close()
 
@@ -484,3 +587,195 @@ def get_lifestyle_history(user_id, days=7):
     return [{"date": r[0], "sleep_hours": r[1], "stress_level": r[2],
              "exercise_min": r[3], "water_liters": r[4], "screen_hours": r[5]}
             for r in rows]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 7-DAY MEAL PLANS (Pre-bundled plans stored in DB)
+# ─────────────────────────────────────────────────────────────────────────────
+def create_meal_plan(plan_name, description):
+    """Create a new meal plan. Returns plan_id."""
+    conn = get_conn()
+    try:
+        conn.execute(
+            "INSERT INTO meal_plans(plan_name, description, created_at) VALUES(?, ?, ?)",
+            (plan_name, description, str(date.today())))
+        conn.commit()
+        plan_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+        conn.close()
+        return plan_id
+    except sqlite3.IntegrityError:
+        conn.close()
+        return None
+
+def add_meal_plan_item(plan_id, day, meal_type, food_name, grams, calories, protein, carbs, fat, fiber):
+    """Add a food item to a meal plan."""
+    conn = get_conn()
+    conn.execute(
+        """INSERT INTO meal_plan_items
+           (plan_id, day, meal_type, food_name, grams, calories, protein, carbs, fat, fiber)
+           VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        (plan_id, day, meal_type, food_name, grams, calories, protein, carbs, fat, fiber))
+    conn.commit()
+    conn.close()
+
+def get_all_meal_plans():
+    """Get all available meal plans (metadata)."""
+    conn = get_conn()
+    rows = conn.execute("SELECT id, plan_name, description FROM meal_plans ORDER BY plan_name").fetchall()
+    conn.close()
+    return [{"id": r[0], "plan_name": r[1], "description": r[2]} for r in rows]
+
+def get_meal_plan_detail(plan_id):
+    """Get full details of a meal plan (all days and items)."""
+    conn = get_conn()
+    rows = conn.execute(
+        """SELECT day, meal_type, food_name, grams, calories, protein, carbs, fat, fiber
+           FROM meal_plan_items WHERE plan_id=? ORDER BY day, 
+           CASE meal_type WHEN 'Breakfast' THEN 1 WHEN 'Lunch' THEN 2 WHEN 'Dinner' THEN 3 ELSE 4 END""",
+        (plan_id,)).fetchall()
+    conn.close()
+    
+    result = {}
+    for row in rows:
+        day = row[0]
+        if day not in result:
+            result[day] = {"Breakfast": [], "Lunch": [], "Dinner": [], "Snacks": []}
+        meal_type = row[1]
+        result[day][meal_type].append({
+            "food_name": row[2],
+            "grams": row[3],
+            "calories": row[4],
+            "protein": row[5],
+            "carbs": row[6],
+            "fat": row[7],
+            "fiber": row[8]
+        })
+    return result
+
+def get_plan_for_day(plan_id, day):
+    """Get meals for a specific day (1-7) from a meal plan."""
+    conn = get_conn()
+    rows = conn.execute(
+        """SELECT meal_type, food_name, grams, calories, protein, carbs, fat, fiber
+           FROM meal_plan_items WHERE plan_id=? AND day=? ORDER BY 
+           CASE meal_type WHEN 'Breakfast' THEN 1 WHEN 'Lunch' THEN 2 WHEN 'Dinner' THEN 3 ELSE 4 END""",
+        (plan_id, day)).fetchall()
+    conn.close()
+    
+    result = {"Breakfast": [], "Lunch": [], "Dinner": [], "Snacks": []}
+    for row in rows:
+        meal_type = row[0]
+        result[meal_type].append({
+            "food_name": row[1],
+            "grams": row[2],
+            "calories": row[3],
+            "protein": row[4],
+            "carbs": row[5],
+            "fat": row[6],
+            "fiber": row[7]
+        })
+    return result
+
+def save_user_selected_plan(user_id, plan_id):
+    """Save the user's selected meal plan."""
+    conn = get_conn()
+    existing = conn.execute(
+        "SELECT id FROM user_selected_plan WHERE user_id=?", (user_id,)).fetchone()
+    if existing:
+        conn.execute(
+            "UPDATE user_selected_plan SET plan_id=?, selected_at=? WHERE user_id=?",
+            (plan_id, str(date.today()), user_id))
+    else:
+        conn.execute(
+            "INSERT INTO user_selected_plan(user_id, plan_id, selected_at) VALUES(?, ?, ?)",
+            (user_id, plan_id, str(date.today())))
+    conn.commit()
+    conn.close()
+
+def get_user_selected_plan(user_id):
+    """Get the meal plan selected by the user."""
+    conn = get_conn()
+    row = conn.execute(
+        "SELECT plan_id FROM user_selected_plan WHERE user_id=?", (user_id,)).fetchone()
+    conn.close()
+    return row[0] if row else None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# USER TARGETS
+# ─────────────────────────────────────────────────────────────────────────────
+def get_user_targets(user_id):
+    """Get user's custom targets or defaults if not set."""
+    conn = get_conn()
+    row = conn.execute(
+        """SELECT calories, protein, carbs, fat, fiber, sugar,
+           sleep_hours, exercise_min, water_liters, stress_level
+           FROM user_targets WHERE user_id=?""", (user_id,)).fetchone()
+    conn.close()
+    if row:
+        return {
+            "calories": row[0],
+            "protein": row[1],
+            "carbs": row[2],
+            "fat": row[3],
+            "fiber": row[4],
+            "sugar": row[5],
+            "sleep_hours": row[6],
+            "exercise_min": row[7],
+            "water_liters": row[8],
+            "stress_level": row[9],
+        }
+    # Return defaults
+    return {
+        "calories": 2000,
+        "protein": 50,
+        "carbs": 260,
+        "fat": 70,
+        "fiber": 25,
+        "sugar": 50,
+        "sleep_hours": 8,
+        "exercise_min": 30,
+        "water_liters": 2.5,
+        "stress_level": 5,
+    }
+
+def save_user_targets(user_id, targets):
+    """Save or update user's custom targets."""
+    conn = get_conn()
+    existing = conn.execute(
+        "SELECT id FROM user_targets WHERE user_id=?", (user_id,)).fetchone()
+    if existing:
+        conn.execute(
+            """UPDATE user_targets SET calories=?, protein=?, carbs=?, fat=?,
+               fiber=?, sugar=?, sleep_hours=?, exercise_min=?, water_liters=?,
+               stress_level=? WHERE user_id=?""",
+            (targets.get("calories", 2000),
+             targets.get("protein", 50),
+             targets.get("carbs", 260),
+             targets.get("fat", 70),
+             targets.get("fiber", 25),
+             targets.get("sugar", 50),
+             targets.get("sleep_hours", 8),
+             targets.get("exercise_min", 30),
+             targets.get("water_liters", 2.5),
+             targets.get("stress_level", 5),
+             user_id))
+    else:
+        conn.execute(
+            """INSERT INTO user_targets
+               (user_id, calories, protein, carbs, fat, fiber, sugar,
+                sleep_hours, exercise_min, water_liters, stress_level)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (user_id,
+             targets.get("calories", 2000),
+             targets.get("protein", 50),
+             targets.get("carbs", 260),
+             targets.get("fat", 70),
+             targets.get("fiber", 25),
+             targets.get("sugar", 50),
+             targets.get("sleep_hours", 8),
+             targets.get("exercise_min", 30),
+             targets.get("water_liters", 2.5),
+             targets.get("stress_level", 5)))
+    conn.commit()
+    conn.close()
