@@ -58,7 +58,9 @@ android.archs = arm64-v8a, armeabi-v7a
 # icon.filename = %(source.dir)s/icon.png
 
 # Fullscreen = 0 keeps the Android status bar visible.
-# Top padding is handled in main.py via Window insets.
+# With android.api >= 35, Android 15+ forces edge-to-edge drawing, so the
+# app content goes behind the status/navigation bars. main.py compensates
+# by padding the root layout with the bar heights (_system_bar_insets).
 fullscreen = 0
 
 [buildozer]

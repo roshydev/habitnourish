@@ -28,8 +28,9 @@ class DashboardScreen(Screen):
         outer = BoxLayout(orientation="vertical")
 
         # Right-side header controls: Settings (profile) + Logout
+        # Width = two 72dp buttons + 6dp spacing
         right_box = BoxLayout(orientation="horizontal", size_hint=(None, 1),
-                              width=dp(132), spacing=dp(6))
+                              width=dp(150), spacing=dp(6))
         settings_btn = styled_btn("Settings", bg=C_GREY,
                                   height=dp(34), width=dp(72), font_size=dp(11))
         settings_btn.bind(on_release=lambda *_: self._go("profile"))

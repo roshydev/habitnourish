@@ -12,6 +12,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from kivy.app import App
 from kivy.core.window import Window
+from kivy.logger import Logger
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager
 
 from db import init_db
@@ -30,21 +32,41 @@ from screens.meal_plan  import MealPlanScreen
 from screens.lifestyle  import LifestyleScreen
 from screens.edit_targets import EditTargetsScreen
 
-# Fix window size only on desktop for development preview.
-# On Android, Kivy uses the full screen automatically.
+def _system_bar_insets():
+    """Return (top, bottom) padding in pixels for the Android system bars.
+
+    Apps targeting API 35 on Android 15+ are forced edge-to-edge: the app
+    draws behind the status bar and navigation bar. We pad the root layout
+    by those bar heights so the header and bottom content stay visible.
+    On older Android the system already reserves that space, so we return
+    (0, 0) to avoid a double gap. On desktop, jnius isn't available.
+    """
+    try:
+        from jnius import autoclass
+    except ImportError:
+        return 0, 0  # desktop
+    try:
+        sdk = autoclass("android.os.Build$VERSION").SDK_INT
+        if sdk < 35:
+            Logger.info(f"HabitNourish: SDK={sdk} insets top=0 bottom=0 (not edge-to-edge)")
+            return 0, 0
+        res = autoclass("android.content.res.Resources").getSystem()
+
+        def dim(name):
+            rid = res.getIdentifier(name, "dimen", "android")
+            return res.getDimensionPixelSize(rid) if rid > 0 else 0
+
+        top, bottom = dim("status_bar_height"), dim("navigation_bar_height")
+        Logger.info(f"HabitNourish: SDK={sdk} insets top={top} bottom={bottom}")
+        return top, bottom
+    except Exception as e:
+        Logger.warning(f"HabitNourish: inset detection failed: {e!r}")
+        return 0, 0
+
+
 try:
-    from android import mActivity  # noqa — only present on Android
-    # Detect status bar height and shift the Kivy window down so
-    # the header bar is not hidden behind the Android status bar.
-    from jnius import autoclass
-    _Res = autoclass('android.content.res.Resources')
-    _res = _Res.getSystem()
-    _rid = _res.getIdentifier('status_bar_height', 'dimen', 'android')
-    if _rid > 0:
-        _sb_px = _res.getDimensionPixelSize(_rid)
-        # Kivy Window.top moves the window down by this many pixels
-        Window.top = _sb_px
-except Exception:
+    from android import mActivity  # noqa: F401 — only present on Android
+except ImportError:
     # Desktop — apply a phone-like preview size
     Window.size = (390, 844)
 
@@ -72,7 +94,12 @@ class HabitNourishApp(App):
         sm.add_widget(AnalyticsScreen(name="analytics"))
         sm.add_widget(MealPlanScreen(name="meal_plan"))
         sm.add_widget(LifestyleScreen(name="lifestyle"))
-        return sm
+
+        # Keep every screen clear of the status bar and navigation bar
+        top, bottom = _system_bar_insets()
+        root = BoxLayout(padding=[0, top, 0, bottom])
+        root.add_widget(sm)
+        return root
 
 
 if __name__ == "__main__":
