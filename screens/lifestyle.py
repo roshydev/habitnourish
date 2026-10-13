@@ -43,7 +43,7 @@ class LifestyleScreen(Screen):
             card.add_widget(inner)
             return card
 
-        layout.add_widget(_input_card("Sleep Hours",          "e.g., 7.5",          "sleep_hours"))
+        layout.add_widget(_input_card("Sleep Hours (for previous night)", "e.g., 7.5",          "sleep_hours"))
         layout.add_widget(spacer(dp(8)))
         layout.add_widget(_input_card("Stress Level (1-10)",  "1=calm, 10=stressed", "stress_level"))
         layout.add_widget(spacer(dp(8)))

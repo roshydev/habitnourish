@@ -5,6 +5,7 @@ db.py – All database and CSV functions for HabitNourish.
 
 import csv
 import hashlib
+import json
 import os
 import sqlite3
 from datetime import date, timedelta
@@ -34,6 +35,41 @@ def get_csv_path(filename):
         if os.path.exists(p):
             return p
     return candidates[1]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# REMEMBERED LOGIN  (stored locally on the device)
+# ─────────────────────────────────────────────────────────────────────────────
+def _remember_path():
+    return os.path.join(get_data_dir(), "remember.json")
+
+def save_remembered_login(identifier, password):
+    """Persist login credentials on the device so the user stays signed in.
+
+    Stored locally only (never uploaded). Call clear_remembered_login() on
+    logout to forget them.
+    """
+    try:
+        with open(_remember_path(), "w", encoding="utf-8") as f:
+            json.dump({"identifier": identifier, "password": password}, f)
+    except OSError:
+        pass
+
+def load_remembered_login():
+    """Return (identifier, password) if saved, else (None, None)."""
+    try:
+        with open(_remember_path(), encoding="utf-8") as f:
+            data = json.load(f)
+        return data.get("identifier"), data.get("password")
+    except (OSError, ValueError):
+        return None, None
+
+def clear_remembered_login():
+    """Forget any saved credentials (used on logout)."""
+    try:
+        os.remove(_remember_path())
+    except OSError:
+        pass
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -12,6 +12,9 @@ __pycache__/
 # Database (user data - don't commit)
 *.db
 
+# Remembered login credentials (local device only - never commit)
+remember.json
+
 # Kivy logs
 .kivy/
 logs/
