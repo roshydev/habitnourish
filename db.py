@@ -82,17 +82,19 @@ def load_master_foods():
     with open(path, encoding="utf-8") as f:
         for row in csv.DictReader(f):
             foods.append({
-                "type":     row["type"],
-                "name":     row["name"],
-                "calories": float(row["calories"]),
-                "protein":  float(row["protein"]),
-                "carbs":    float(row["carbs"]),
-                "fat":      float(row["fat"]),
-                "fiber":    float(row["fiber"]),
-                "sugar":    float(row["sugar"]),
-                "sodium":   float(row["sodium"]),
-                "category": row["category"],
-                "source":   "master",
+                "type":       row["type"],
+                "name":       row["name"],
+                "calories":   float(row["calories"]),
+                "protein":    float(row["protein"]),
+                "carbs":      float(row["carbs"]),
+                "fat":        float(row["fat"]),
+                "fiber":      float(row["fiber"]),
+                "sugar":      float(row["sugar"]),
+                "sodium":     float(row["sodium"]),
+                "category":   row["category"],
+                "veg_nonveg": (row.get("veg_nonveg") or "Veg").strip(),
+                "state":      (row.get("state") or "Common").strip(),
+                "source":     "master",
             })
     return foods
 
@@ -106,17 +108,19 @@ def load_user_foods(email):
         for row in csv.DictReader(f):
             if row.get("created_by", "") == email:
                 foods.append({
-                    "type":     row["type"],
-                    "name":     row["name"],
-                    "calories": float(row["calories"]),
-                    "protein":  float(row["protein"]),
-                    "carbs":    float(row["carbs"]),
-                    "fat":      float(row["fat"]),
-                    "fiber":    float(row.get("fiber", 0)),
-                    "sugar":    float(row.get("sugar", 0)),
-                    "sodium":   float(row.get("sodium", 0)),
-                    "category": row["category"],
-                    "source":   "user",
+                    "type":       row["type"],
+                    "name":       row["name"],
+                    "calories":   float(row["calories"]),
+                    "protein":    float(row["protein"]),
+                    "carbs":      float(row["carbs"]),
+                    "fat":        float(row["fat"]),
+                    "fiber":      float(row.get("fiber", 0)),
+                    "sugar":      float(row.get("sugar", 0)),
+                    "sodium":     float(row.get("sodium", 0)),
+                    "category":   row["category"],
+                    "veg_nonveg": (row.get("veg_nonveg") or "Veg").strip(),
+                    "state":      (row.get("state") or "Common").strip(),
+                    "source":     "user",
                 })
     return foods
 
@@ -163,22 +167,25 @@ def save_master_food(food_dict):
     path = get_csv_path("master_foods.csv")
     file_exists = os.path.exists(path)
     fieldnames = ["type", "name", "calories", "protein", "carbs",
-                  "fat", "fiber", "sugar", "sodium", "category"]
+                  "fat", "fiber", "sugar", "sodium", "category",
+                  "veg_nonveg", "state"]
     with open(path, "a", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         if not file_exists:
             writer.writeheader()
         writer.writerow({
-            "type":     food_dict["type"],
-            "name":     name,
-            "calories": food_dict.get("calories", 0),
-            "protein":  food_dict.get("protein", 0),
-            "carbs":    food_dict.get("carbs", 0),
-            "fat":      food_dict.get("fat", 0),
-            "fiber":    food_dict.get("fiber", 0),
-            "sugar":    food_dict.get("sugar", 0),
-            "sodium":   food_dict.get("sodium", 0),
-            "category": food_dict.get("category", "Custom"),
+            "type":       food_dict["type"],
+            "name":       name,
+            "calories":   food_dict.get("calories", 0),
+            "protein":    food_dict.get("protein", 0),
+            "carbs":      food_dict.get("carbs", 0),
+            "fat":        food_dict.get("fat", 0),
+            "fiber":      food_dict.get("fiber", 0),
+            "sugar":      food_dict.get("sugar", 0),
+            "sodium":     food_dict.get("sodium", 0),
+            "category":   food_dict.get("category", "Custom"),
+            "veg_nonveg": food_dict.get("veg_nonveg", "Non-Veg"),
+            "state":      food_dict.get("state", "Common"),
         })
     return True, None
 
@@ -190,7 +197,38 @@ def get_all_foods(email=""):
     return foods
 
 def foods_by_type(meal_type, email=""):
-    return [f for f in get_all_foods(email) if f["type"] == meal_type]
+    # "Snacks" (UI tab) and "Snack" (CSV data) refer to the same meal.
+    aliases = {meal_type}
+    if meal_type in ("Snack", "Snacks"):
+        aliases = {"Snack", "Snacks"}
+    return [f for f in get_all_foods(email) if f["type"] in aliases]
+
+
+def _parse_states(food_state):
+    """Turn a stored food_state value into a set of selected state names.
+
+    food_state is a comma-separated string (e.g. 'Kerala,Tamil Nadu').
+    Empty/None falls back to Kerala.
+    """
+    if not food_state:
+        return {"Kerala"}
+    return {s.strip() for s in food_state.split(",") if s.strip()}
+
+def filter_foods(foods, diet_pref=None, food_state=None):
+    """Filter a food list by dietary preference and selected states.
+
+    - diet_pref 'Vegetarian' keeps only veg_nonveg == 'Veg'.
+    - food_state (comma-separated states) keeps foods whose state is one of the
+      selected states OR 'Common'. Fruits / nuts / beverages live under Common,
+      so they always remain visible.
+    """
+    result = foods
+    if diet_pref == "Vegetarian":
+        result = [f for f in result if f.get("veg_nonveg", "Veg") == "Veg"]
+    selected = _parse_states(food_state)
+    allowed = selected | {"Common"}
+    result = [f for f in result if f.get("state", "Common") in allowed]
+    return result
 
 def scale_nutrients(food, grams):
     """Scale per-100g values to actual serving size."""
@@ -221,6 +259,7 @@ def init_db():
         activity    TEXT,
         goal        TEXT,
         diet_pref   TEXT,
+        food_state  TEXT DEFAULT 'Kerala',
         target      INTEGER DEFAULT 2000,
         reset_token TEXT
     )""")
@@ -329,7 +368,8 @@ def init_db():
 
     existing_u = {row[1] for row in c.execute("PRAGMA table_info(users)")}
     for col, dtype in [("reset_token","TEXT"), ("diet_pref","TEXT"),
-                        ("target","INTEGER DEFAULT 2000")]:
+                        ("target","INTEGER DEFAULT 2000"),
+                        ("food_state","TEXT DEFAULT 'Kerala'")]:
         if col not in existing_u:
             c.execute(f"ALTER TABLE users ADD COLUMN {col} {dtype}")
 
@@ -392,23 +432,24 @@ def reset_password(identifier, token, new_pw):
 def get_user_profile(user_id):
     conn = get_conn()
     row = conn.execute(
-        "SELECT name,age,weight,height,gender,activity,goal,diet_pref,target,email,mobile "
+        "SELECT name,age,weight,height,gender,activity,goal,diet_pref,"
+        "food_state,target,email,mobile "
         "FROM users WHERE id=?", (user_id,)).fetchone()
     conn.close()
     if row:
         return dict(zip(
             ["name","age","weight","height","gender","activity",
-             "goal","diet_pref","target","email","mobile"], row))
+             "goal","diet_pref","food_state","target","email","mobile"], row))
     return {}
 
 def save_user_profile(user_id, p):
     conn = get_conn()
     conn.execute("""UPDATE users SET name=?,age=?,weight=?,height=?,
-                    gender=?,activity=?,goal=?,diet_pref=?,target=?
+                    gender=?,activity=?,goal=?,diet_pref=?,food_state=?,target=?
                     WHERE id=?""",
                  (p["name"], p["age"], p["weight"], p["height"],
                   p["gender"], p["activity"], p["goal"], p["diet_pref"],
-                  p["target"], user_id))
+                  p.get("food_state", "Kerala"), p["target"], user_id))
     conn.commit()
     conn.close()
 

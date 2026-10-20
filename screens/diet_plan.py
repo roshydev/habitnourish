@@ -8,7 +8,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import Screen, SlideTransition
 from kivy.uix.textinput import TextInput
 
-from db import (get_all_foods, foods_by_type, log_food, log_plan_item)
+from db import (get_all_foods, foods_by_type, log_food, log_plan_item,
+                filter_foods)
 from helpers import (C_GREEN, C_DARK_GREEN, C_LIGHT_GREEN, C_GREY,
                      C_WHITE, C_TEXT, C_RED, C_ORANGE,
                      styled_btn, lbl, spacer, card_box,
@@ -22,7 +23,8 @@ class DietPlanScreen(Screen):
         self.clear_widgets()
         app         = App.get_running_app()
         self._p     = app.profile
-        self._pref  = self._p.get("diet_pref", "No Restriction")
+        self._pref  = self._p.get("diet_pref", "Vegetarian")
+        self._state = self._p.get("food_state", "Kerala")
         self._email = self._p.get("email", "")
         self._open  = None
         self._build()
@@ -318,6 +320,7 @@ class DietPlanScreen(Screen):
             all_items = get_all_foods(self._email)
             filtered  = self._filter(all_items, self._pref)
             results   = [f for f in filtered if query in f["name"].lower()]
+            results   = sorted(results, key=lambda f: f["name"].lower())
             if not results:
                 self._food_layout.add_widget(lbl(
                     f'No results for "{query}".', color=C_GREY,
@@ -340,6 +343,7 @@ class DietPlanScreen(Screen):
 
         items    = foods_by_type(self._open, self._email)
         filtered = self._filter(items, self._pref)
+        filtered = sorted(filtered, key=lambda f: f["name"].lower())
         if not filtered:
             self._food_layout.add_widget(lbl(
                 f"No {self._pref} options found for {self._open}.",
@@ -361,7 +365,7 @@ class DietPlanScreen(Screen):
             f'Per 100g:  {food["calories"]:.0f} kcal  |  '
             f'P: {food["protein"]:.1f}g   C: {food["carbs"]:.1f}g   '
             f'F: {food["fat"]:.1f}g',
-            size=dp(10), color=C_GREY, h=dp(18)))
+            size=dp(10), color=C_TEXT, h=dp(18)))
         info.add_widget(lbl(
             f'{food["category"]}  |  {food.get("source","master").upper()}'
             + (f'  |  {food["type"]}' if food["type"] != meal else ""),
@@ -377,19 +381,11 @@ class DietPlanScreen(Screen):
         self._render_food_list()
 
     def _filter(self, items, pref):
-        NON_VEG = {"Chicken Breast (Cooked)", "Tuna (Canned)", "Salmon (Cooked)",
-                   "Chicken Curry (Home Style)", "Fish Curry", "Grilled Fish",
-                   "Mutton (Cooked)", "Grilled Fish Tacos", "Egg (Whole)",
-                   "Egg White", "Egg Curry"}
-        if pref == "Vegetarian":
-            return [i for i in items if i["name"] not in NON_VEG]
-        if pref == "Vegan":
-            animal = NON_VEG | {"Greek Yogurt", "Milk (Full Fat)", "Paneer",
-                                 "Cottage Cheese", "Egg (Whole)", "Egg White"}
-            return [i for i in items if i["name"] not in animal]
-        if pref == "High Protein":
-            return [i for i in items if i["protein"] >= 10]
-        return items
+        """Filter by dietary preference (Veg column) and the user's selected
+        states (plus Common). Delegates to db.filter_foods so the rule lives in
+        one place."""
+        return filter_foods(items, diet_pref=pref,
+                            food_state=getattr(self, "_state", "Kerala"))
 
     def _log_popup(self, food, meal):
         content = BoxLayout(orientation="vertical",

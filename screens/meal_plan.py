@@ -14,11 +14,14 @@ from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, RoundedRectangle
 
 from db import (get_plan_for_range, save_plan_entry, delete_plan_entry,
-                get_all_foods, foods_by_type, scale_nutrients)
+                get_all_foods, foods_by_type, scale_nutrients, filter_foods)
 from helpers import (C_GREEN, C_DARK_GREEN, C_LIGHT_GREEN, C_BLUE, C_RED,
                      C_GREY, C_TEXT, C_WHITE, C_CARD,
                      styled_btn, lbl, spacer, card_box,
                      scroll_layout, header_bar, confirm_popup)
+
+# Light sage background used only for the food-selection cards in this popup
+C_FOOD_CARD = (0.84, 0.89, 0.80, 1)
 
 
 class MealPlanScreen(Screen):
@@ -160,7 +163,7 @@ class MealPlanScreen(Screen):
                              height=dp(50), padding=dp(10), spacing=dp(6))
             # own canvas with a tracked Color so we can highlight on select
             with card.canvas.before:
-                card._color = Color(*C_CARD)
+                card._color = Color(*C_FOOD_CARD)
                 card._rect = RoundedRectangle(pos=card.pos, size=card.size,
                                               radius=[dp(10)])
             card.bind(pos=lambda o, v: setattr(o._rect, "pos", v),
@@ -172,14 +175,14 @@ class MealPlanScreen(Screen):
                 f'Per 100g: {food["calories"]:.0f} kcal  |  '
                 f'P:{food["protein"]:.1f}g  C:{food["carbs"]:.1f}g  '
                 f'F:{food["fat"]:.1f}g',
-                size=dp(9), color=C_GREY, h=dp(16)))
+                size=dp(10), color=C_TEXT, h=dp(16)))
             card.add_widget(info)
 
             def _pick(f=food, c=card):
                 self._plan_selected_food = f
                 # reset all card backgrounds, highlight the picked one
                 for cc in self._plan_food_cards.values():
-                    cc._color.rgba = C_CARD
+                    cc._color.rgba = C_FOOD_CARD
                 c._color.rgba = C_LIGHT_GREEN
                 _update_preview()
 
@@ -198,6 +201,11 @@ class MealPlanScreen(Screen):
             self._plan_food_cards = {}
             q = search_ti.text.strip().lower()
             items = foods_by_type(self._plan_meal_var, self._email)
+            # Apply the user's dietary preference + "Food from" state filter
+            prof = App.get_running_app().profile
+            items = filter_foods(items,
+                                 diet_pref=prof.get("diet_pref"),
+                                 food_state=prof.get("food_state"))
             if q:
                 items = [f for f in items if q in f["name"].lower()]
             items = sorted(items, key=lambda f: f["name"].lower())

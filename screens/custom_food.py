@@ -52,6 +52,11 @@ class CustomFoodScreen(Screen):
             ["Breakfast", "Lunch", "Dinner", "Snacks"], "Snacks", "ftype")
         layout.add_widget(type_box)
 
+        layout.add_widget(section_lbl("Vegetarian / Non-Vegetarian"))
+        veg_box, self.get_veg = radio_group(
+            ["Vegetarian", "Non-Vegetarian"], "Non-Vegetarian", "veg")
+        layout.add_widget(veg_box)
+
         layout.add_widget(lbl("Nutrition values are per 100g. All fields below "
                               "are required.",
                                color=C_GREY, size=dp(10), h=dp(20)))
@@ -146,16 +151,18 @@ class CustomFoodScreen(Screen):
                 return
 
         food = {
-            "type":     self.get_type(),
-            "name":     name,
-            "calories": values["calories"],
-            "protein":  values["protein"],
-            "carbs":    values["carbs"],
-            "fat":      values["fat"],
-            "fiber":    values["fiber"],
-            "sugar":    0.0,
-            "sodium":   0.0,
-            "category": self.cat_i.text.strip() or "Custom",
+            "type":       self.get_type(),
+            "name":       name,
+            "calories":   values["calories"],
+            "protein":    values["protein"],
+            "carbs":      values["carbs"],
+            "fat":        values["fat"],
+            "fiber":      values["fiber"],
+            "sugar":      0.0,
+            "sodium":     0.0,
+            "category":   self.cat_i.text.strip() or "Custom",
+            "veg_nonveg": "Veg" if self.get_veg() == "Vegetarian" else "Non-Veg",
+            "state":      "Common",
         }
 
         ok, err = save_master_food(food)

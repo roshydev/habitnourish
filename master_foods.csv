@@ -1,59 +1,334 @@
-type,name,calories,protein,carbs,fat,fiber,sugar,sodium,category
-Breakfast,Oatmeal (Rolled Oats),379,13.2,67.7,6.5,10.1,0.0,6,Grains
-Breakfast,Banana,89,1.1,22.8,0.3,2.6,12.2,1,Fruits
-Breakfast,Egg (Whole),155,12.6,1.1,10.6,0.0,1.1,124,Protein
-Breakfast,Egg White,52,10.9,0.7,0.2,0.0,0.7,166,Protein
-Breakfast,Whole Wheat Bread,247,13.0,41.3,3.4,7.0,5.7,400,Grains
-Breakfast,Greek Yogurt,59,10.2,3.6,0.4,0.0,3.2,36,Dairy
-Breakfast,Avocado,160,2.0,8.5,14.7,6.7,0.7,7,Healthy Fats
-Breakfast,Banana Smoothie,75,1.5,17.0,0.5,1.5,11.0,15,Beverages
-Breakfast,Idli,58,2.0,12.0,0.1,0.5,0.2,180,Traditional
-Breakfast,Sambar,45,2.5,7.0,1.0,2.0,1.5,280,Traditional
-Breakfast,Poha,130,2.5,25.0,2.5,1.0,0.5,200,Traditional
-Breakfast,Upma,150,3.5,22.0,5.0,1.5,0.5,320,Traditional
-Breakfast,Paratha (Plain),300,6.5,42.0,12.0,2.5,1.0,350,Traditional
-Breakfast,Milk (Full Fat),61,3.2,4.8,3.3,0.0,5.0,44,Dairy
-Breakfast,Almonds,579,21.2,21.6,49.9,12.5,4.4,1,Nuts
-Breakfast,Peanut Butter,588,25.1,20.1,50.4,6.0,9.2,459,Nuts
-Lunch,Brown Rice (Cooked),111,2.6,23.0,0.9,1.8,0.4,5,Grains
-Lunch,White Rice (Cooked),130,2.7,28.2,0.3,0.4,0.1,1,Grains
-Lunch,Dal (Lentils Cooked),116,9.0,20.0,0.4,7.9,1.8,2,Legumes
-Lunch,Roti (Wheat),297,10.0,57.0,3.0,11.0,1.0,530,Grains
-Lunch,Chicken Breast (Cooked),165,31.0,0.0,3.6,0.0,0.0,74,Protein
-Lunch,Tuna (Canned),116,25.5,0.0,1.0,0.0,0.0,396,Protein
-Lunch,Quinoa (Cooked),120,4.4,21.3,1.9,2.8,0.9,7,Grains
-Lunch,Paneer,265,18.3,3.4,20.8,0.0,3.4,24,Dairy
-Lunch,Rajma (Kidney Beans Cooked),127,8.7,22.8,0.5,6.4,0.3,2,Legumes
-Lunch,Chickpeas (Cooked),164,8.9,27.4,2.6,7.6,4.8,7,Legumes
-Lunch,Tofu,76,8.1,1.9,4.8,0.3,0.7,7,Protein
-Lunch,Spinach,23,2.9,3.6,0.4,2.2,0.4,79,Vegetables
-Lunch,Broccoli,34,2.8,6.6,0.4,2.6,1.7,33,Vegetables
-Lunch,Tomato,18,0.9,3.9,0.2,1.2,2.6,5,Vegetables
-Lunch,Cucumber,16,0.7,3.6,0.1,0.5,1.7,2,Vegetables
-Lunch,Carrot,41,0.9,9.6,0.2,2.8,4.7,69,Vegetables
-Dinner,Salmon (Cooked),208,20.4,0.0,13.4,0.0,0.0,59,Protein
-Dinner,Chicken Curry (Home Style),150,12.0,8.0,8.0,1.0,2.0,380,Traditional
-Dinner,Fish Curry,160,18.0,5.0,8.0,0.5,1.5,420,Traditional
-Dinner,Pasta (Cooked),131,5.0,25.0,1.1,1.8,0.6,1,Grains
-Dinner,Palak Paneer,150,8.0,10.0,9.0,2.0,2.0,310,Traditional
-Dinner,Mixed Veg Curry,80,2.5,12.0,3.0,3.0,4.0,280,Traditional
-Dinner,Egg Curry,180,12.0,6.0,12.0,0.5,2.0,360,Traditional
-Dinner,Mutton (Cooked),250,25.6,0.0,16.0,0.0,0.0,72,Protein
-Dinner,Grilled Fish,150,22.0,0.0,7.0,0.0,0.0,85,Protein
-Dinner,Lentil Soup,99,7.6,17.0,0.4,4.0,2.0,238,Legumes
-Snacks,Apple,52,0.3,13.8,0.2,2.4,10.4,1,Fruits
-Snacks,Orange,47,0.9,11.8,0.1,2.4,9.4,0,Fruits
-Snacks,Grapes,69,0.7,18.1,0.2,0.9,15.5,2,Fruits
-Snacks,Mango,60,0.8,15.0,0.4,1.6,13.7,1,Fruits
-Snacks,Watermelon,30,0.6,7.6,0.2,0.4,6.2,1,Fruits
-Snacks,Mixed Nuts,607,20.0,21.0,54.0,7.0,4.0,10,Nuts
-Snacks,Cashews,553,18.2,30.2,43.8,3.3,5.9,12,Nuts
-Snacks,Walnuts,654,15.2,13.7,65.2,6.7,2.6,2,Nuts
-Snacks,Protein Bar,400,25.0,45.0,10.0,4.0,20.0,200,Packaged
-Snacks,Rice Cakes,387,8.2,80.9,2.9,0.4,0.5,28,Grains
-Snacks,Hummus,166,7.9,14.3,9.6,6.0,0.3,379,Legumes
-Snacks,Cottage Cheese,98,11.1,3.4,4.3,0.0,2.7,364,Dairy
-Snacks,Dark Chocolate,546,4.9,59.4,31.3,7.0,47.9,20,Sweets
-Snacks,Popcorn (Plain),375,11.0,74.0,4.3,14.5,0.9,8,Grains
-Snacks,oatssaju,100.0,120.0,32.0,21.0,22.0,0.0,0.0,Custom
-Snacks,test,1.0,0.0,0.0,0.0,0.0,0.0,0.0,Custom
+type,name,calories,protein,carbs,fat,fiber,sugar,sodium,category,veg_nonveg,state
+Breakfast,Idli,58,2.0,12.0,0.1,0.5,0.2,180,Traditional,Veg,Common
+Breakfast,Plain Dosa,168,3.9,29.0,3.7,1.2,0.5,220,Traditional,Veg,Common
+Breakfast,Masala Dosa,185,4.2,30.0,5.0,2.0,1.0,280,Traditional,Veg,Common
+Breakfast,Rava Upma,150,3.5,22.0,5.0,1.5,0.5,320,Traditional,Veg,Common
+Breakfast,Medu Vada,250,6.0,28.0,13.0,3.0,0.8,320,Traditional,Veg,Common
+Breakfast,Coconut Chutney,130,2.5,6.0,11.0,2.5,2.0,180,,Veg,Common
+Breakfast,Sambar,45,2.5,7.0,1.0,2.0,1.5,280,Traditional,Veg,Common
+Breakfast,Egg (Boiled),155,12.6,1.1,10.6,0.0,1.1,124,Protein,Non-Veg,Common
+Lunch,Steamed Rice (Cooked),130,2.7,28.2,0.3,0.4,0.1,1,Grains,Veg,Common
+Lunch,Curd Rice,110,3.0,18.0,2.5,0.5,2.0,240,Traditional,Veg,Common
+Lunch,Lemon Rice,160,3.0,28.0,4.5,1.2,0.5,300,Traditional,Veg,Common
+Lunch,Rasam,35,1.5,6.0,0.8,0.8,1.5,300,Traditional,Veg,Common
+Snack,Groundnuts (Roasted),567,25.8,16.1,49.2,8.5,4.0,18,Nuts/Dry Fruits,Veg,Common
+Snack,Cashew Nuts,553,18.2,30.2,43.9,3.3,5.9,12,Nuts/Dry Fruits,Veg,Common
+Snack,Tea (with Milk & Sugar),50,1.2,8.0,1.5,0.0,7.0,15,Beverages,Veg,Common
+Snack,Filter Coffee,60,1.8,8.0,2.0,0.0,7.0,20,Beverages,Veg,Common
+Snack,Buttermilk (Spiced),40,1.8,4.0,1.8,0.1,3.0,220,Beverages,Veg,Common
+Snack,Tender Coconut Water,19,0.7,3.7,0.2,1.1,2.6,105,Beverages,Veg,Common
+Snack,Sundal (Chickpea),150,7.0,22.0,3.5,6.0,2.0,210,Traditional,Veg,Common
+Dinner,Chapati with Kurma,210,6.0,32.0,7.0,3.5,2.0,340,Traditional,Veg,Common
+Dinner,Uttapam,180,4.5,30.0,4.5,1.8,1.0,260,Traditional,Veg,Common
+Dinner,Phulka (Chapati),250,9.0,49.0,3.0,9.0,1.5,180,Grains,Veg,Common
+Breakfast,Puttu,135,2.8,28.0,0.6,1.8,0.3,5,Traditional,Veg,Kerala
+Breakfast,Puttu with Kadala,145,4.5,24.0,3.0,3.0,1.0,160,Traditional,Veg,Kerala
+Breakfast,Appam,120,2.2,24.0,1.5,0.8,1.2,150,Traditional,Veg,Kerala
+Breakfast,Appam with Egg Curry,160,7.0,22.0,5.0,1.2,2.0,280,Traditional,Non-Veg,Kerala
+Breakfast,Idiyappam,130,2.5,28.0,0.5,1.0,0.2,8,Traditional,Veg,Kerala
+Breakfast,Vellayappam,145,2.8,27.0,2.5,0.8,3.0,120,Traditional,Veg,Kerala
+Breakfast,Kadala Curry,150,7.0,18.0,5.5,5.0,2.0,320,Traditional,Veg,Kerala
+Breakfast,Ela Ada,180,3.0,38.0,2.0,2.0,12.0,40,Traditional,Veg,Kerala
+Breakfast,Pazham Pori (Banana Fritter),210,2.0,33.0,8.0,2.0,14.0,60,Traditional,Veg,Kerala
+Breakfast,Kozhukatta,190,3.5,35.0,4.5,1.5,10.0,45,Traditional,Veg,Kerala
+Breakfast,Rava Dosa (Kerala),190,4.0,31.0,5.5,1.2,0.6,260,Traditional,Veg,Kerala
+Breakfast,Wheat Puttu,140,3.5,28.0,1.0,3.0,0.4,6,Traditional,Veg,Kerala
+Breakfast,Ragi Puttu,138,3.2,27.0,0.9,3.5,0.3,6,Traditional,Veg,Kerala
+Breakfast,Banana (Nendran),122,1.3,31.9,0.3,2.3,17.0,1,Fruit,Veg,Common
+Breakfast,Steamed Banana (Nendran),116,1.2,30.0,0.3,2.2,15.0,1,Fruit,Veg,Common
+Breakfast,Mutta Surka,200,6.0,24.0,8.0,1.0,2.0,260,Traditional,Non-Veg,Kerala
+Breakfast,Uzhunnu Vada,250,6.0,28.0,13.0,3.0,0.8,320,Traditional,Veg,Kerala
+Breakfast,Kerala Appam with Stew,155,4.5,23.0,5.0,1.5,2.0,270,Traditional,Veg,Kerala
+Breakfast,Dosa with Chammanthi,175,4.0,29.0,4.5,1.5,0.8,240,Traditional,Veg,Kerala
+Breakfast,Pathiri,160,3.0,32.0,2.0,1.2,0.3,120,Traditional,Veg,Kerala
+Breakfast,Chatti Pathiri (Sweet),240,5.0,36.0,8.0,1.0,14.0,150,Traditional,Veg,Kerala
+Breakfast,Muttamala,260,8.0,40.0,7.0,0.0,36.0,30,Traditional,Non-Veg,Kerala
+Breakfast,Kaya Puzhungiyathu (Boiled Banana),116,1.2,30.0,0.3,2.2,15.0,1,Fruit,Veg,Common
+Lunch,Kerala Red Rice (Cooked),120,2.8,25.0,0.9,2.0,0.3,4,Grains,Veg,Kerala
+Lunch,Kerala Matta Rice (Cooked),123,2.9,26.0,0.9,2.1,0.3,4,Grains,Veg,Kerala
+Lunch,Avial,110,3.0,9.0,7.0,3.5,3.0,260,Traditional,Veg,Kerala
+Lunch,Thoran (Cabbage),95,3.0,8.0,6.0,3.5,2.5,210,Vegetables,Veg,Kerala
+Lunch,Beans Thoran,100,3.2,9.0,6.0,3.8,2.5,210,Vegetables,Veg,Kerala
+Lunch,Beetroot Thoran,105,2.8,11.0,6.0,3.5,5.0,220,Vegetables,Veg,Kerala
+Lunch,Olan,85,1.8,7.0,6.0,2.0,2.5,180,Traditional,Veg,Kerala
+Lunch,Erissery,150,5.0,16.0,8.0,4.0,3.0,230,Traditional,Veg,Kerala
+Lunch,Parippu Curry,120,7.0,16.0,3.0,5.0,1.0,250,Traditional,Veg,Kerala
+Lunch,Sambar (Kerala),50,2.8,7.5,1.2,2.2,1.6,290,Traditional,Veg,Kerala
+Lunch,Pulissery,90,2.5,8.0,5.0,0.8,3.0,260,Traditional,Veg,Kerala
+Lunch,Kalan,110,3.0,10.0,6.5,1.5,3.5,240,Traditional,Veg,Kerala
+Lunch,Moru Curry,70,2.0,5.0,4.5,0.5,2.5,230,Traditional,Veg,Kerala
+Lunch,Fish Curry (Kerala),140,16.0,4.0,7.0,1.0,2.0,420,Traditional,Non-Veg,Kerala
+Lunch,Meen Mulakittathu,135,16.0,3.0,6.5,0.8,1.5,440,Traditional,Non-Veg,Kerala
+Lunch,Meen Pollichathu,175,18.0,4.0,9.0,1.0,2.0,420,Traditional,Non-Veg,Kerala
+Lunch,Chemmeen Curry (Prawn),130,17.0,4.0,5.0,0.8,2.0,430,Traditional,Non-Veg,Kerala
+Lunch,Kerala Beef Fry,250,24.0,3.0,16.0,1.0,1.0,380,Traditional,Non-Veg,Kerala
+Lunch,Beef Ularthiyathu,255,24.0,4.0,16.5,1.2,1.0,390,Traditional,Non-Veg,Kerala
+Lunch,Chicken Curry (Kerala),180,20.0,5.0,9.0,1.0,2.0,420,Traditional,Non-Veg,Kerala
+Lunch,Nadan Kozhi Varuthathu,230,22.0,5.0,13.0,1.0,1.5,400,Traditional,Non-Veg,Kerala
+Lunch,Egg Roast (Kerala),165,9.0,8.0,11.0,1.5,3.0,340,Traditional,Non-Veg,Kerala
+Lunch,Fish Fry (Kerala),200,22.0,3.0,11.0,0.5,0.5,360,Traditional,Non-Veg,Kerala
+Lunch,Kerala Sadya Rice,130,2.7,28.0,0.3,0.4,0.1,2,Grains,Veg,Kerala
+Lunch,Inji Curry (Ginger),140,2.0,22.0,5.0,2.0,14.0,420,Traditional,Veg,Kerala
+Lunch,Pachadi (Cucumber),80,2.0,7.0,5.0,1.0,3.5,220,Traditional,Veg,Kerala
+Lunch,Kootu Curry,130,4.0,16.0,6.0,4.0,3.0,230,Traditional,Veg,Kerala
+Lunch,Theeyal,135,3.5,13.0,8.0,3.0,4.0,260,Traditional,Veg,Kerala
+Lunch,Mezhukkupuratti (Veg Stir Fry),110,2.5,10.0,7.0,3.0,2.0,210,Vegetables,Veg,Kerala
+Lunch,Kaya Mezhukkupuratti,130,1.5,22.0,5.0,2.5,6.0,180,Vegetables,Veg,Kerala
+Lunch,Chena Mezhukkupuratti,120,2.0,20.0,4.5,2.5,2.0,190,Vegetables,Veg,Kerala
+Lunch,Malabar Chicken Biryani,200,11.0,25.0,7.0,1.5,1.5,440,Traditional,Non-Veg,Kerala
+Lunch,Thalassery Biryani,205,11.5,25.0,7.5,1.5,1.5,450,Traditional,Non-Veg,Kerala
+Lunch,Kappa Biryani,185,9.0,26.0,6.0,2.0,1.0,380,Traditional,Non-Veg,Kerala
+Lunch,Prawn Fry (Kerala),195,20.0,4.0,11.0,0.5,0.5,400,Traditional,Non-Veg,Kerala
+Lunch,Duck Roast (Kerala),260,22.0,5.0,17.0,1.0,2.0,420,Traditional,Non-Veg,Kerala
+Lunch,Cabbage Thoran,95,3.0,8.0,6.0,3.5,2.5,210,Vegetables,Veg,Kerala
+Snack,Banana Chips (Kerala),500,2.3,58.0,30.0,3.0,2.0,120,,Veg,Kerala
+Snack,Tapioca Chips,520,1.5,60.0,32.0,2.5,1.0,140,,Veg,Kerala
+Snack,Unniyappam,320,4.0,50.0,12.0,2.0,22.0,40,Traditional,Veg,Kerala
+Snack,Parippu Vada,245,9.0,28.0,11.0,5.0,1.0,340,Traditional,Veg,Kerala
+Snack,Uzhunnu Vada (Snack),250,6.0,28.0,13.0,3.0,0.8,320,Traditional,Veg,Kerala
+Snack,Sukhiyan,280,5.0,42.0,10.0,4.0,16.0,45,Traditional,Veg,Kerala
+Snack,Pazham Nurukku,215,2.0,34.0,8.0,2.0,15.0,55,Traditional,Veg,Kerala
+Snack,Achappam,470,6.0,52.0,26.0,1.5,8.0,60,Traditional,Veg,Kerala
+Snack,Kuzhalappam,480,7.0,55.0,25.0,2.0,2.0,120,Traditional,Veg,Kerala
+Snack,Avalose Podi,420,8.0,55.0,18.0,5.0,10.0,30,Traditional,Veg,Kerala
+Snack,Churuttu,460,5.0,56.0,24.0,1.5,14.0,50,Traditional,Veg,Kerala
+Snack,Neyyappam,350,4.5,48.0,16.0,1.5,24.0,40,Traditional,Veg,Kerala
+Snack,Vazhakka Bajji,190,3.0,28.0,7.0,2.5,3.0,180,Traditional,Veg,Kerala
+Snack,Parippu Payasam,180,4.0,30.0,5.0,1.0,22.0,35,Traditional,Veg,Kerala
+Snack,Palada Payasam,190,3.5,32.0,5.5,0.3,26.0,45,Traditional,Veg,Kerala
+Snack,Semiya Payasam,175,3.8,30.0,5.0,0.5,24.0,40,Traditional,Veg,Kerala
+Snack,Kerala Halwa,400,2.0,62.0,16.0,1.0,45.0,55,Traditional,Veg,Kerala
+Snack,Pakkavada,490,9.0,52.0,27.0,3.5,1.0,480,Traditional,Veg,Kerala
+Snack,Sharkara Varatti,450,2.0,65.0,20.0,3.0,40.0,30,Traditional,Veg,Kerala
+Dinner,Appam with Stew,150,4.0,22.0,5.0,1.5,2.0,260,Traditional,Veg,Kerala
+Dinner,Kerala Chicken Stew,130,12.0,8.0,6.0,1.5,2.5,300,Traditional,Non-Veg,Kerala
+Dinner,Vegetable Stew,100,2.5,10.0,5.5,2.0,3.0,250,Traditional,Veg,Kerala
+Dinner,Idiyappam with Curry,145,3.5,26.0,3.0,1.5,1.0,240,Traditional,Veg,Kerala
+Dinner,Kappa (Tapioca),160,1.4,38.0,0.3,1.8,1.4,14,,Veg,Kerala
+Dinner,Kappa with Fish Curry,180,9.0,24.0,6.0,2.0,1.5,360,Traditional,Non-Veg,Kerala
+Dinner,Kappa with Meen Curry,180,9.0,24.0,6.0,2.0,1.5,360,Traditional,Non-Veg,Kerala
+Dinner,Kerala Parotta,330,7.0,46.0,13.0,2.0,1.5,420,Traditional,Veg,Kerala
+Dinner,Parotta with Beef,290,15.0,35.0,12.0,2.0,1.5,440,Traditional,Non-Veg,Kerala
+Dinner,Pathiri with Chicken Curry,185,12.0,24.0,6.0,1.5,2.0,380,Traditional,Non-Veg,Kerala
+Dinner,Wheat Dosa (Kerala),175,5.0,30.0,4.0,3.0,0.6,230,Traditional,Veg,Kerala
+Dinner,Chapathi with Veg Curry,205,6.0,32.0,6.5,3.5,2.0,330,Traditional,Veg,Kerala
+Dinner,Idiyappam with Egg Curry,165,8.0,26.0,4.0,1.5,2.0,300,Traditional,Non-Veg,Kerala
+Dinner,Neychoru (Ghee Rice),200,4.0,32.0,7.0,0.8,1.0,250,Traditional,Veg,Kerala
+Dinner,Kerala Fried Rice,185,5.0,30.0,5.5,1.5,1.5,320,Traditional,Veg,Kerala
+Dinner,Dosa with Sambar,175,4.0,29.0,4.5,1.5,1.0,260,Traditional,Veg,Kerala
+Breakfast,Pongal (Ven),160,4.5,25.0,5.0,1.5,0.3,340,Traditional,Veg,Tamil Nadu
+Breakfast,Sweet Pongal (Sakkarai),230,3.5,42.0,6.5,0.8,24.0,30,Traditional,Veg,Tamil Nadu
+Breakfast,Adai,210,9.0,28.0,7.0,5.0,0.8,260,Traditional,Veg,Tamil Nadu
+Breakfast,Kuzhi Paniyaram,180,4.0,28.0,6.0,1.5,1.0,250,Traditional,Veg,Tamil Nadu
+Breakfast,Rava Kesari,250,3.0,42.0,8.0,0.8,26.0,35,Traditional,Veg,Tamil Nadu
+Breakfast,Idiyappam (TN),130,2.5,28.0,0.5,1.0,0.2,8,Traditional,Veg,Tamil Nadu
+Breakfast,Poori with Potato Masala,280,5.0,38.0,12.0,2.0,2.0,320,Traditional,Veg,Tamil Nadu
+Breakfast,Semiya Upma,165,3.5,28.0,4.5,1.2,0.8,300,Traditional,Veg,Tamil Nadu
+Breakfast,Ragi Dosa (TN),160,4.5,27.0,3.5,3.5,0.5,220,Traditional,Veg,Tamil Nadu
+Breakfast,Set Dosa (TN),175,4.0,30.0,4.0,1.2,0.6,240,Traditional,Veg,Tamil Nadu
+Lunch,Sambar Rice,140,3.5,26.0,2.5,2.5,1.5,350,Traditional,Veg,Tamil Nadu
+Lunch,Tamarind Rice (Puliyodarai),175,3.2,30.0,5.0,1.5,2.0,340,Traditional,Veg,Tamil Nadu
+Lunch,Coconut Rice,190,3.5,30.0,7.0,2.0,1.5,300,Traditional,Veg,Tamil Nadu
+Lunch,Tomato Rice,165,3.0,29.0,4.5,1.5,2.5,320,Traditional,Veg,Tamil Nadu
+Lunch,Kootu,95,4.0,12.0,3.5,3.0,1.5,220,Traditional,Veg,Tamil Nadu
+Lunch,Vatha Kuzhambu,110,2.5,14.0,5.5,2.0,3.0,450,Traditional,Veg,Tamil Nadu
+Lunch,Kara Kuzhambu,120,3.0,13.0,6.5,2.5,2.5,440,Traditional,Veg,Tamil Nadu
+Lunch,Poriyal (Beans),100,3.0,9.0,6.0,3.5,2.5,210,Vegetables,Veg,Tamil Nadu
+Lunch,Cabbage Poriyal,95,3.0,8.0,6.0,3.5,2.5,210,Vegetables,Veg,Tamil Nadu
+Lunch,Chettinad Chicken,195,22.0,6.0,9.0,1.5,2.0,460,Traditional,Non-Veg,Tamil Nadu
+Lunch,Chicken Chettinad Biryani,205,11.0,25.0,7.5,1.5,1.5,450,Traditional,Non-Veg,Tamil Nadu
+Lunch,Mutton Kuzhambu,230,20.0,6.0,14.0,1.0,2.0,470,Traditional,Non-Veg,Tamil Nadu
+Lunch,Fish Kuzhambu (TN),135,16.0,4.0,6.5,0.8,2.0,440,Traditional,Non-Veg,Tamil Nadu
+Lunch,Chettinad Egg Curry,160,8.5,8.0,10.0,1.5,3.0,360,Traditional,Non-Veg,Tamil Nadu
+Lunch,Paruppu Urundai Kuzhambu,140,7.0,16.0,5.0,4.0,2.0,400,Traditional,Veg,Tamil Nadu
+Lunch,Keerai Masiyal (Spinach),60,3.5,6.0,2.0,3.0,1.0,180,Vegetables,Veg,Tamil Nadu
+Lunch,More Kuzhambu,80,2.5,6.0,5.0,0.8,2.5,240,Traditional,Veg,Tamil Nadu
+Snack,Murukku,480,8.0,55.0,25.0,3.0,1.0,420,Traditional,Veg,Tamil Nadu
+Snack,Thattai,475,8.0,54.0,25.0,3.0,1.0,430,Traditional,Veg,Tamil Nadu
+Snack,Bonda,260,5.0,32.0,12.0,2.5,1.0,320,Traditional,Veg,Tamil Nadu
+Snack,Bajji (Mixed),200,3.5,28.0,8.0,2.5,2.0,300,Traditional,Veg,Tamil Nadu
+Snack,Vazhaipoo Vadai,230,7.0,26.0,11.0,5.0,1.0,330,Traditional,Veg,Tamil Nadu
+Snack,Mysore Bonda,270,5.0,33.0,13.0,2.0,1.5,310,Traditional,Veg,Tamil Nadu
+Snack,Ribbon Pakoda,490,8.0,53.0,27.0,3.0,1.0,470,Traditional,Veg,Tamil Nadu
+Snack,Seedai,460,7.0,56.0,22.0,2.5,1.0,380,Traditional,Veg,Tamil Nadu
+Snack,Adhirasam,400,3.5,62.0,15.0,1.0,38.0,30,Traditional,Veg,Tamil Nadu
+Snack,Jangri,380,3.0,60.0,14.0,0.5,40.0,25,Traditional,Veg,Tamil Nadu
+Snack,Mysore Pak (TN),560,4.0,55.0,36.0,0.5,42.0,20,Traditional,Veg,Tamil Nadu
+Snack,Sundal (Peanut),170,8.0,18.0,8.0,5.0,2.0,210,Traditional,Veg,Tamil Nadu
+Dinner,Idiyappam with Coconut Milk,160,3.0,28.0,4.5,1.0,3.0,160,Traditional,Veg,Tamil Nadu
+Dinner,Wheat Dosa,175,5.0,30.0,4.0,3.0,0.6,230,Traditional,Veg,Tamil Nadu
+Dinner,Kal Dosa,170,4.0,29.0,4.0,1.2,0.5,220,Traditional,Veg,Tamil Nadu
+Dinner,Parotta,330,7.0,46.0,13.0,2.0,1.5,420,Traditional,Veg,Tamil Nadu
+Dinner,Kothu Parotta,280,10.0,34.0,11.0,2.0,2.0,460,Traditional,Non-Veg,Tamil Nadu
+Dinner,Chapati with Salna,215,6.0,32.0,7.0,3.5,2.5,360,Traditional,Veg,Tamil Nadu
+Dinner,Idli with Milagai Podi,120,4.0,20.0,3.0,1.5,0.5,260,Traditional,Veg,Tamil Nadu
+Breakfast,Pesarattu,170,8.0,25.0,4.0,4.0,1.5,210,Traditional,Veg,Andhra
+Breakfast,MLA Pesarattu,200,8.5,30.0,5.5,4.5,1.0,320,Traditional,Veg,Andhra
+Breakfast,Attu (Rice Dosa),165,3.5,30.0,3.0,1.0,0.5,200,Traditional,Veg,Andhra
+Breakfast,Ravva Dosa,190,4.0,31.0,5.5,1.2,0.6,260,Traditional,Veg,Andhra
+Breakfast,Punugulu,230,5.0,30.0,10.0,2.0,0.8,280,Traditional,Veg,Andhra
+Breakfast,Upma (Andhra),155,3.6,23.0,5.2,1.6,0.6,330,Traditional,Veg,Andhra
+Breakfast,Idli with Karam Podi,120,4.0,20.0,3.0,1.5,0.5,260,Traditional,Veg,Andhra
+Breakfast,Minapa Attu,175,6.0,28.0,4.0,2.0,0.6,230,Traditional,Veg,Andhra
+Breakfast,Garelu (Vada),250,6.0,28.0,13.0,3.0,0.8,320,Traditional,Veg,Andhra
+Breakfast,Bobbatlu (Puran Poli),330,6.0,55.0,9.0,2.5,28.0,40,Traditional,Veg,Andhra
+Lunch,Andhra Meals Rice,130,2.7,28.2,0.3,0.4,0.1,1,Grains,Veg,Andhra
+Lunch,Pappu (Dal),125,8.0,18.0,2.0,6.0,1.5,260,Protein,Veg,Andhra
+Lunch,Tomato Pappu,120,7.0,16.0,2.5,5.0,3.0,270,Traditional,Veg,Andhra
+Lunch,Palakura Pappu (Spinach Dal),115,7.5,15.0,2.5,5.5,2.0,280,Traditional,Veg,Andhra
+Lunch,Gongura Pachadi,90,2.5,8.0,5.5,3.0,2.0,480,,Veg,Andhra
+Lunch,Gongura Mutton,235,20.0,7.0,14.0,1.5,2.0,490,Traditional,Non-Veg,Andhra
+Lunch,Andhra Chicken Curry,210,21.0,7.0,11.0,1.5,2.5,500,Traditional,Non-Veg,Andhra
+Lunch,Kodi Vepudu (Chicken Fry),235,23.0,5.0,14.0,1.0,1.5,460,Traditional,Non-Veg,Andhra
+Lunch,Natu Kodi Pulusu,195,21.0,6.0,10.0,1.2,2.0,480,Traditional,Non-Veg,Andhra
+Lunch,Royyala Iguru (Prawn),150,18.0,5.0,6.5,0.8,2.0,450,Traditional,Non-Veg,Andhra
+Lunch,Chepala Pulusu (Fish),140,16.0,5.0,6.5,0.8,2.5,460,Traditional,Non-Veg,Andhra
+Lunch,Pulihora (Tamarind Rice),175,3.2,31.0,4.8,1.5,2.0,360,Traditional,Veg,Andhra
+Lunch,Vankaya Curry (Brinjal),110,2.5,11.0,6.5,4.0,4.0,300,Vegetables,Veg,Andhra
+Lunch,Gutti Vankaya,150,3.5,13.0,9.0,4.5,4.0,320,Traditional,Veg,Andhra
+Lunch,Bendakaya Fry (Okra),120,2.8,11.0,7.0,4.0,3.0,250,Vegetables,Veg,Andhra
+Lunch,Chicken Biryani (Andhra),190,10.0,24.0,6.5,1.5,1.0,420,Traditional,Non-Veg,Andhra
+Lunch,Ulava Charu,95,5.0,12.0,2.5,3.5,2.0,350,Traditional,Veg,Andhra
+Lunch,Pappu Charu,85,4.5,12.0,2.0,3.0,2.5,340,Traditional,Veg,Andhra
+Lunch,Avakaya Rice,180,3.0,28.0,6.5,1.5,2.0,620,Traditional,Veg,Andhra
+Snack,Chekkalu (Rice Crackers),460,8.0,56.0,22.0,3.0,1.0,430,Traditional,Veg,Andhra
+Snack,Sakinalu,470,7.0,55.0,24.0,2.5,1.0,380,Traditional,Veg,Andhra
+Snack,Ariselu,380,4.0,60.0,14.0,1.5,32.0,25,Traditional,Veg,Andhra
+Snack,Punugulu (Snack),230,5.0,30.0,10.0,2.0,0.8,280,Traditional,Veg,Andhra
+Snack,Pootharekulu,390,3.0,62.0,15.0,0.5,42.0,20,Traditional,Veg,Andhra
+Snack,Mirchi Bajji,220,4.0,26.0,11.0,3.0,2.0,360,Traditional,Veg,Andhra
+Snack,Jantikalu,480,8.0,54.0,25.0,3.0,1.0,440,Traditional,Veg,Andhra
+Snack,Bellam Gavvalu,400,4.0,64.0,14.0,1.0,34.0,25,Traditional,Veg,Andhra
+Dinner,Pesarattu Upma (MLA Dinner),200,8.5,30.0,5.5,4.5,1.0,320,Traditional,Veg,Andhra
+Dinner,Jonna Rotte (Jowar),105,3.4,21.0,1.2,3.0,0.4,8,Grains,Veg,Andhra
+Dinner,Sajja Rotte (Bajra),110,3.6,20.0,1.5,3.5,0.5,9,Grains,Veg,Andhra
+Dinner,Dosa with Tomato Pachadi,180,4.0,30.0,4.5,1.5,2.5,300,Traditional,Veg,Andhra
+Dinner,Ragi Sankati,118,3.0,24.0,0.8,3.3,0.3,6,Grains,Veg,Andhra
+Dinner,Chapati with Kurma (Andhra),210,6.0,32.0,7.0,3.5,2.0,340,Traditional,Veg,Andhra
+Dinner,Roti with Natu Kodi Curry,200,14.0,24.0,6.0,3.0,2.0,440,Traditional,Non-Veg,Andhra
+Breakfast,Set Dosa,175,4.0,30.0,4.0,1.2,0.6,240,Traditional,Veg,Karnataka
+Breakfast,Rava Idli,135,3.8,24.0,2.5,1.5,0.6,300,Traditional,Veg,Karnataka
+Breakfast,Khara Bath,165,3.5,24.0,6.0,1.8,0.6,350,Traditional,Veg,Karnataka
+Breakfast,Kesari Bath,220,3.0,38.0,6.5,0.8,20.0,45,Traditional,Veg,Karnataka
+Breakfast,Chow Chow Bath,195,3.3,31.0,6.3,1.3,10.0,200,Traditional,Veg,Karnataka
+Breakfast,Neer Dosa,150,3.0,28.0,2.5,0.8,0.4,120,Traditional,Veg,Karnataka
+Breakfast,Akki Rotti,180,3.2,33.0,4.0,1.8,0.5,230,Traditional,Veg,Karnataka
+Breakfast,Benne Dose,200,4.0,30.0,7.0,1.2,0.6,260,Traditional,Veg,Karnataka
+Breakfast,Mysore Masala Dosa,200,4.5,31.0,6.5,2.0,1.5,300,Traditional,Veg,Karnataka
+Breakfast,Ragi Roti,180,3.2,33.0,4.0,1.8,0.5,230,Traditional,Veg,Karnataka
+Breakfast,Goli Baje (Mangalore Bajji),280,5.0,34.0,13.0,1.5,1.5,320,Traditional,Veg,Karnataka
+Breakfast,Uppittu (Upma),150,3.5,22.0,5.0,1.5,0.5,320,Traditional,Veg,Karnataka
+Lunch,Bisi Bele Bath,165,5.0,26.0,4.5,3.0,1.2,380,Traditional,Veg,Karnataka
+Lunch,Ragi Mudde,120,3.0,25.0,0.8,3.5,0.3,5,Grains,Veg,Karnataka
+Lunch,Jolada Rotti (Sorghum),105,3.4,21.0,1.2,3.0,0.4,8,Grains,Veg,Karnataka
+Lunch,Vangi Bath,175,3.5,29.0,5.5,2.5,1.5,340,Traditional,Veg,Karnataka
+Lunch,Chitranna (Lemon Rice),160,3.0,28.0,4.5,1.2,0.5,300,Traditional,Veg,Karnataka
+Lunch,Mysore Rasam,45,1.8,7.0,1.4,1.0,1.6,310,Traditional,Veg,Karnataka
+Lunch,Saaru (Rasam),38,1.6,6.5,0.9,0.9,1.5,300,Traditional,Veg,Karnataka
+Lunch,Palya (Vegetable Stir Fry),90,2.8,9.0,5.0,3.5,2.5,200,Vegetables,Veg,Karnataka
+Lunch,Huli (Sambar),50,2.8,7.5,1.2,2.2,1.6,290,Traditional,Veg,Karnataka
+Lunch,Majjige Huli,80,2.5,6.0,5.0,0.8,2.5,240,Traditional,Veg,Karnataka
+Lunch,Kosambari (Salad),90,5.0,10.0,3.0,4.0,2.0,120,Vegetables,Veg,Karnataka
+Lunch,Donne Biryani (Chicken),205,11.0,25.0,7.5,1.5,1.5,450,Traditional,Non-Veg,Karnataka
+Lunch,Mangalore Chicken Curry,195,20.0,6.0,10.0,1.2,2.0,460,Traditional,Non-Veg,Karnataka
+Lunch,Kori Gassi (Chicken),200,20.0,6.5,11.0,1.5,2.5,450,Traditional,Non-Veg,Karnataka
+Lunch,Fish Curry (Mangalore),140,16.0,4.0,7.0,1.0,2.0,440,Traditional,Non-Veg,Karnataka
+Lunch,Pandi Curry (Coorg Pork),280,21.0,5.0,20.0,1.0,1.5,420,Traditional,Non-Veg,Karnataka
+Lunch,Bassaru,95,6.0,11.0,2.5,4.0,2.0,320,Traditional,Veg,Karnataka
+Snack,Mysore Pak,560,4.0,55.0,36.0,0.5,42.0,20,Traditional,Veg,Karnataka
+Snack,Nippattu,470,8.0,52.0,25.0,3.5,1.0,400,Traditional,Veg,Karnataka
+Snack,Chakli,490,8.0,54.0,26.0,3.0,1.0,420,Traditional,Veg,Karnataka
+Snack,Kodubale,480,7.0,53.0,25.0,3.0,1.0,410,Traditional,Veg,Karnataka
+Snack,Dharwad Peda,420,8.0,55.0,18.0,0.0,50.0,60,Dairy,Veg,Karnataka
+Snack,Maddur Vada,290,5.0,34.0,15.0,2.0,1.0,350,Traditional,Veg,Karnataka
+Snack,Obbattu (Holige),330,6.0,55.0,9.0,2.5,28.0,40,Traditional,Veg,Karnataka
+Snack,Kadabu (Sweet),250,4.0,42.0,7.0,2.0,18.0,30,Traditional,Veg,Karnataka
+Snack,Congress Kadalekai,580,24.0,20.0,47.0,8.0,4.0,320,Nuts/Dry Fruits,Veg,Karnataka
+Snack,Khara Mandakki (Puffed Rice),180,4.0,32.0,4.0,1.5,1.0,320,Traditional,Veg,Karnataka
+Dinner,Ragi Dosa,160,4.5,27.0,3.5,3.5,0.5,220,Traditional,Veg,Karnataka
+Dinner,Akki Rotti (Dinner),180,3.2,33.0,4.0,1.8,0.5,230,Traditional,Veg,Karnataka
+Dinner,Ragi Mudde with Saaru,125,3.2,25.0,1.2,3.5,0.4,260,Traditional,Veg,Karnataka
+Dinner,Jolada Rotti with Palya,150,3.3,22.0,4.5,3.0,1.5,260,Traditional,Veg,Karnataka
+Dinner,Neer Dosa with Chutney,160,3.2,28.0,3.5,1.2,0.8,180,Traditional,Veg,Karnataka
+Dinner,Kori Rotti,220,14.0,28.0,7.0,1.5,2.0,440,Traditional,Non-Veg,Karnataka
+Dinner,Chapati with Palya,200,5.5,31.0,6.0,3.5,2.0,300,Traditional,Veg,Karnataka
+Snack,Banana (Robusta),89,1.1,22.8,0.3,2.6,12.2,1,Fruit,Veg,Common
+Snack,Mango (Ripe),60,0.8,15.0,0.4,1.6,13.7,1,Fruit,Veg,Common
+Snack,Papaya,43,0.5,11.0,0.3,1.7,7.8,8,Fruit,Veg,Common
+Snack,Guava,68,2.6,14.3,1.0,5.4,8.9,2,Fruit,Veg,Common
+Snack,Pineapple,50,0.5,13.1,0.1,1.4,9.9,1,Fruit,Veg,Common
+Snack,Watermelon,30,0.6,7.6,0.2,0.4,6.2,1,Fruit,Veg,Common
+Snack,Muskmelon,34,0.8,8.2,0.2,0.9,7.9,16,Fruit,Veg,Common
+Snack,Orange,47,0.9,11.8,0.1,2.4,9.4,0,Fruit,Veg,Common
+Snack,Sweet Lime (Mosambi),43,0.8,9.3,0.3,0.5,8.0,1,Fruit,Veg,Common
+Snack,Apple,52,0.3,13.8,0.2,2.4,10.4,1,Fruit,Veg,Common
+Snack,Grapes,69,0.7,18.1,0.2,0.9,15.5,2,Fruit,Veg,Common
+Snack,Pomegranate,83,1.7,18.7,1.2,4.0,13.7,3,Fruit,Veg,Common
+Snack,Sapota (Chikoo),83,0.4,20.0,1.1,5.3,16.0,12,Fruit,Veg,Common
+Snack,Custard Apple,94,2.1,23.6,0.3,4.4,19.0,4,Fruit,Veg,Common
+Snack,Jackfruit (Ripe),95,1.7,23.2,0.6,1.5,19.1,2,Fruit,Veg,Common
+Snack,Guava (Pink),68,2.6,14.3,1.0,5.4,8.9,2,Fruit,Veg,Common
+Snack,Tender Jackfruit Seeds,184,7.0,38.0,0.5,1.5,0.0,20,Fruit,Veg,Common
+Snack,Jamun (Black Plum),62,0.7,14.0,0.2,0.6,12.0,14,Fruit,Veg,Common
+Snack,Amla (Gooseberry),44,0.9,10.2,0.6,4.3,4.0,1,Fruit,Veg,Common
+Snack,Wood Apple,140,7.1,18.0,3.7,5.0,10.0,4,Fruit,Veg,Common
+Snack,Rose Apple (Jambu),25,0.6,5.7,0.3,1.1,4.5,0,Fruit,Veg,Common
+Snack,Star Fruit,31,1.0,6.7,0.3,2.8,4.0,2,Fruit,Veg,Common
+Snack,Pear,57,0.4,15.2,0.1,3.1,9.8,1,Fruit,Veg,Common
+Snack,Dragon Fruit,60,1.2,13.0,0.0,3.0,8.0,0,Fruit,Veg,Common
+Snack,Tender Coconut Pulp,41,1.1,3.9,2.5,2.2,2.6,24,Fruit,Veg,Common
+Snack,Almonds,579,21.2,21.6,49.9,12.5,4.4,1,Nuts/Dry Fruits,Veg,Common
+Snack,Walnuts,654,15.2,13.7,65.2,6.7,2.6,2,Nuts/Dry Fruits,Veg,Common
+Snack,Pistachios,560,20.2,27.2,45.3,10.6,7.7,1,Nuts/Dry Fruits,Veg,Common
+Snack,Raisins (Kishmish),299,3.1,79.2,0.5,3.7,59.2,11,Nuts/Dry Fruits,Veg,Common
+Snack,Dates (Dried),277,1.8,75.0,0.2,6.7,66.5,1,Nuts/Dry Fruits,Veg,Common
+Snack,Dried Figs (Anjeer),249,3.3,63.9,0.9,9.8,47.9,10,Nuts/Dry Fruits,Veg,Common
+Snack,Dried Apricots,241,3.4,62.6,0.5,7.3,53.4,10,Nuts/Dry Fruits,Veg,Common
+Snack,Pine Nuts,673,13.7,13.1,68.4,3.7,3.6,2,Nuts/Dry Fruits,Veg,Common
+Snack,Hazelnuts,628,15.0,16.7,60.8,9.7,4.3,0,Nuts/Dry Fruits,Veg,Common
+Snack,Dried Cranberries,308,0.1,82.4,1.4,5.7,65.0,3,Nuts/Dry Fruits,Veg,Common
+Snack,Pumpkin Seeds,559,30.2,10.7,49.1,6.0,1.4,7,Nuts/Dry Fruits,Veg,Common
+Snack,Sunflower Seeds,584,20.8,20.0,51.5,8.6,2.6,9,Nuts/Dry Fruits,Veg,Common
+Snack,Chia Seeds,486,16.5,42.1,30.7,34.4,0.0,16,Nuts/Dry Fruits,Veg,Common
+Snack,Flax Seeds,534,18.3,28.9,42.2,27.3,1.6,30,Nuts/Dry Fruits,Veg,Common
+Snack,Dried Dates (Kharik),314,2.5,82.0,0.4,8.0,70.0,2,Nuts/Dry Fruits,Veg,Common
+Snack,Milk (Full Fat),61,3.2,4.8,3.3,0.0,5.0,44,Dairy,Veg,Common
+Snack,Milk (Toned),42,3.1,4.9,1.3,0.0,5.0,45,Dairy,Veg,Common
+Snack,Milk (Skimmed),35,3.4,5.0,0.1,0.0,5.0,46,Dairy,Veg,Common
+Snack,Black Tea (No Sugar),1,0.0,0.3,0.0,0.0,0.0,3,Beverages,Veg,Common
+Snack,Green Tea,1,0.0,0.2,0.0,0.0,0.0,2,Beverages,Veg,Common
+Snack,Black Coffee (No Sugar),2,0.1,0.0,0.0,0.0,0.0,2,Beverages,Veg,Common
+Snack,Masala Chai,60,1.5,9.0,1.8,0.0,8.0,18,Beverages,Veg,Common
+Snack,Badam Milk,110,3.5,14.0,4.5,0.5,13.0,40,Beverages,Veg,Common
+Snack,Sweet Lassi,110,2.8,16.0,3.5,0.1,14.0,45,Beverages,Veg,Common
+Snack,Plain Curd (Yogurt),60,3.1,4.7,3.3,0.0,4.7,36,Dairy,Veg,Common
+Snack,Nannari Sharbat,70,0.1,18.0,0.0,0.0,17.0,10,Beverages,Veg,Common
+Snack,Sugarcane Juice,74,0.3,19.0,0.1,0.1,18.0,8,Beverages,Veg,Common
+Snack,Fresh Lime Juice (Sweet),45,0.1,11.5,0.0,0.1,10.5,6,Beverages,Veg,Common
+Snack,Lime Soda (Sweet),40,0.0,10.0,0.0,0.0,9.5,20,Beverages,Veg,Common
+Snack,Orange Juice (Fresh),45,0.7,10.4,0.2,0.2,8.3,1,Beverages,Veg,Common
+Snack,Mango Juice (Fresh),54,0.5,13.0,0.2,0.3,12.0,3,Beverages,Veg,Common
+Snack,Watermelon Juice,30,0.6,7.5,0.1,0.2,6.0,1,Beverages,Veg,Common
+Snack,Rose Milk,95,3.0,15.0,3.0,0.0,14.0,40,Beverages,Veg,Common
+Snack,Horlicks with Milk,90,3.5,13.0,2.8,0.2,11.0,55,Beverages,Veg,Common
+Snack,Paneer Soda,42,0.0,10.5,0.0,0.0,10.0,25,Beverages,Veg,Common
+Snack,Pineapple Juice (Fresh),53,0.4,12.9,0.1,0.2,10.0,1,Beverages,Veg,Common
+Snack,Pomegranate Juice,54,0.4,13.1,0.3,0.1,11.9,9,Beverages,Veg,Common
+Snack,Grape Juice (Fresh),60,0.4,14.8,0.1,0.2,14.2,5,Beverages,Veg,Common
+Snack,Apple Juice (Fresh),46,0.1,11.3,0.1,0.2,9.6,4,Beverages,Veg,Common
+Snack,Guava Juice,52,0.6,12.0,0.2,1.0,9.0,3,Beverages,Veg,Common
+Snack,Papaya Juice,40,0.5,10.0,0.1,0.5,8.0,6,Beverages,Veg,Common
+Snack,Mosambi Juice (Sweet Lime),43,0.6,10.5,0.2,0.3,9.0,2,Beverages,Veg,Common
+Snack,Carrot Juice,40,0.9,9.3,0.2,0.8,3.9,66,Beverages,Veg,Common
+Snack,Beetroot Juice,43,1.6,9.9,0.2,0.8,7.0,78,Beverages,Veg,Common
+Snack,ABC Juice (Apple Beet Carrot),48,1.0,11.0,0.2,0.9,8.5,45,Beverages,Veg,Common
+Snack,Amla Juice,38,0.5,9.0,0.1,1.5,4.0,5,Beverages,Veg,Common
+Snack,Watermelon Mint Juice,28,0.5,7.0,0.1,0.3,5.8,2,Beverages,Veg,Common
+Snack,Muskmelon Juice,32,0.7,7.8,0.2,0.4,7.0,15,Beverages,Veg,Common
+Snack,Grape & Apple Juice,52,0.3,13.0,0.1,0.2,11.5,4,Beverages,Veg,Common
+Snack,Jamun Juice,45,0.5,11.0,0.1,0.4,9.5,10,Beverages,Veg,Common
+Snack,Kokum Juice (Sweet),55,0.1,14.0,0.0,0.2,13.0,20,Beverages,Veg,Common
+Snack,Mango Lassi,100,2.6,18.0,2.5,0.3,16.0,40,Beverages,Veg,Common
+Snack,Pineapple Mint Cooler,42,0.3,10.5,0.1,0.3,9.5,5,Beverages,Veg,Common
+Snack,Mixed Fruit Juice,55,0.6,13.5,0.2,0.4,12.0,8,Beverages,Veg,Common
+Snack,Lemon Ginger Juice,35,0.2,9.0,0.1,0.2,8.0,6,Beverages,Veg,Common
